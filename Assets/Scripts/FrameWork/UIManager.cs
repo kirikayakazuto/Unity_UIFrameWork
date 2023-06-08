@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -56,7 +57,24 @@ namespace FrameWork {
 			var gameObject = (GameObject)Resources.Load(prefabPath);
 			return this.AddTransformTree(gameObject.GetComponent<Transform>());
 		}
-		public UIBase OpenForm(IFormConfig formConfig) {
+		public UIBase OpenForm(IFormConfig formConfig, IFormData? formData) {
+			var prefabUrl = formConfig.prefabUrl;
+			if (prefabUrl.Length <= 0) {
+				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
+				return null;
+			}
+
+			if (this.checkFormShowing(prefabUrl)) {
+				Debug.LogWarning("UIManager: open form error form is showing, prefabUrl: " + prefabUrl);
+				return null;
+			}
+
+			var com = this.LoadForm(prefabUrl);
+			com.fid = prefabUrl;
+			com.formData =  formData ?? new IFormData();
+			
+			
+			
 			return null;
 		}
 
@@ -76,6 +94,32 @@ namespace FrameWork {
 			this._allForms[com.fid] = com;
 
 			return com;
+		}
+
+		private void EnterToScreen(string fid, [CanBeNull] Object param) {
+			foreach (var keyValuePair in this._showingForms) {
+				keyValuePair.Value.CloseSelf();
+			}
+
+			var com = this._allForms[fid];
+			this._showingForms[fid] = com;
+			
+			com._PreInit(param);
+			com.OnShow(param);
+			com.OnShowEffect();
+			com.OnAfterShow(param);
+		}
+
+		private void EnterToFixed(string fid, Object param) {
+			
+		}
+
+		private void EnterToPopup(string fid, Object param) {
+			
+		}
+
+		private void EnterToTips(string fid, Object param) {
+			
 		}
 
 		public bool checkFormShowing(string prefabPath) {

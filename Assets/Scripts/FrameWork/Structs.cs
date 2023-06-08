@@ -15,4 +15,10 @@ namespace FrameWork {
 		Toast,
 		Tips,
 	}
+	
+	public enum CloseType {
+		CloseAndHide,
+		CloseAndDestory,
+		LRU
+	}
 }
