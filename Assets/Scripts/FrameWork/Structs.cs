@@ -17,8 +17,33 @@ namespace FrameWork {
 	}
 	
 	public enum CloseType {
-		CloseAndHide,
-		CloseAndDestory,
+		Hide,
+		Destory,
 		LRU
+	}
+
+	public enum ModalOpacity {
+		/** 没有mask, 可以穿透 */
+		None,
+		/** 完全透明，不能穿透 */
+		OpacityZero,
+		/** 高透明度，不能穿透 */
+		OpacityLow,
+		/** 半透明，不能穿透 */
+		OpacityHalf,
+		/** 低透明度, 不能穿透 */
+		OpacityHigh,
+		/** 完全不透明 */
+		OpacityFull
+	}
+
+	public class ModalType {
+		public ModalOpacity opacity;
+		public bool clickMaskClose;
+
+		public ModalType(ModalOpacity opacity = ModalOpacity.OpacityHalf, bool clickMaskClose = true) {
+			this.opacity = opacity;
+			this.clickMaskClose = clickMaskClose;
+		}
 	}
 }
