@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using FrameWork.Structure;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using JetBrains.Annotations;

@@ -1,11 +1,16 @@
-namespace FrameWork {
-
+namespace FrameWork.Structure {
 	public struct IFormConfig {
 		public string prefabUrl;
-    	public string type;
+		public string type;
 	}
 	public struct IFormData {
+		public IFormConfig? loadingForm;
+		public bool quickly;
 		
+		public IFormData(IFormConfig? loadingForm, bool quickly = false) {
+			this.loadingForm = loadingForm;
+			this.quickly = quickly;
+		}
 	}
 
 	public enum FormType {
@@ -45,5 +50,10 @@ namespace FrameWork {
 			this.opacity = opacity;
 			this.clickMaskClose = clickMaskClose;
 		}
+	}
+
+	public class PriorityElement<T> {
+		public T data;
+		public int priority;
 	}
 }

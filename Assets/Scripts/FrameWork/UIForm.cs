@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using FrameWork.Structure;
 using UnityEngine;
 
 namespace FrameWork {

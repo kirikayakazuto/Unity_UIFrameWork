@@ -1,5 +1,8 @@
+using FrameWork.Structure;
+
 namespace FrameWork {
 	public class SysDefine {
+		public static IFormConfig defaultLoadingForm = new IFormConfig();
 		/* 节点常量 */
 		public static string SYS_UIROOT_NODE = "ROOT";
 		public const string SYS_SCREEN_NODE = "Screen";

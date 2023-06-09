@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using FrameWork.Structure;
 using UnityEngine;
 
 namespace FrameWork {
@@ -9,7 +10,7 @@ namespace FrameWork {
 		
 
 		private IFormConfig currScene;
-		private Stack<IFormConfig> scenes = new Stack<IFormConfig>();
+		private readonly Stack<IFormConfig> scenes = new Stack<IFormConfig>();
 
 		public UIBase GetCurrScene() {
 			return UIManager.GetInstance().GetForm(this.currScene.prefabUrl);
@@ -21,7 +22,9 @@ namespace FrameWork {
 				Debug.LogWarning("SceneMgr: curr scene == open scene, prefabUrl: " + prefabUrl);
 				return null;
 			}
-			await this.OpenLoading();
+			
+			await this.OpenLoading(param, formData);
+			
 			if (this.scenes.Count > 0) {
 				var scene = this.scenes.Peek();
 				await UIManager.GetInstance().CloseForm(this.currScene, param, formData);
@@ -29,7 +32,8 @@ namespace FrameWork {
 			this.currScene = formConfig;
 
 			var com = await UIManager.GetInstance().OpenForm(formConfig, param, formData);
-			await this.CloseLoading();
+			
+			await this.CloseLoading(param, formData);
 			
 			return com;
 		}
@@ -39,13 +43,16 @@ namespace FrameWork {
 				Debug.LogError("SceneMgr: Back error, only one scene");
 				return false;
 			}
-		 	await this.OpenLoading();
+
+			await this.OpenLoading(param, formData);
+		 	
 		    var scene = this.scenes.Pop();
 		    await UIManager.GetInstance().CloseForm(scene, param, formData);
 
 		    this.currScene = this.scenes.Peek();
 		    await UIManager.GetInstance().OpenForm(this.currScene, param, formData);
-		    await this.CloseLoading();
+		    
+		    await this.CloseLoading(param, formData);
 
 		    return true;
 		}
@@ -54,12 +61,16 @@ namespace FrameWork {
 			return await UIManager.GetInstance().CloseForm(formConfig, param, formData);
 		}
 
-		private async UniTask<UIBase> OpenLoading() {
+		private async UniTask<UIBase> OpenLoading([CanBeNull] Object param, IFormData? formData) {
+			var loadingForm = formData?.loadingForm ?? SysDefine.defaultLoadingForm; 
+			await TipsMgr.instance.Open(loadingForm, param, formData);
 			return null;
 		}
 
-		private async UniTask<bool> CloseLoading() {
-			return false;
+		private async UniTask<bool> CloseLoading([CanBeNull] Object param, IFormData? formData) {
+			var loadingForm = formData?.loadingForm ?? SysDefine.defaultLoadingForm; 
+			await TipsMgr.instance.Close(loadingForm, param, formData);
+			return true;
 		}
 	}
 }
