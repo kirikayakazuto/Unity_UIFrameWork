@@ -56,8 +56,8 @@ namespace FrameWork {
 			return UIManager.instance;
 		}
 
-		public async UniTask<UIBase> LoadForm(string prefabPath) {
-			var gameObject = await this._LoadForm(prefabPath);
+		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {
+			var gameObject = await this._LoadForm(formConfig.prefabUrl);
 			return gameObject == null ? null : this.AddTransformTree(gameObject.GetComponent<RectTransform>());
 		}
 
@@ -73,7 +73,7 @@ namespace FrameWork {
 			var gameObject = await asyncLoad as GameObject;
 			this._loadingForms.Remove(prefabPath);
 
-			return gameObject;
+			return Object.Instantiate(gameObject);
 		}
 
 		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
@@ -88,7 +88,7 @@ namespace FrameWork {
 				return null;
 			}
 
-			var com = await this.LoadForm(prefabUrl);
+			var com = await this.LoadForm(formConfig);
 			if (!com) {
 				Debug.LogError("UIManager: 资源加载失败 prefabUrl: " + prefabUrl);
 			}
@@ -96,24 +96,7 @@ namespace FrameWork {
 			com.fid = prefabUrl;
 			com.formData = formData ?? new IFormData();
 
-			switch (com.formType) {
-				case FormType.Screen:
-					await this.EnterToScreen(com.fid, param);
-					break;
-				case FormType.Fixed:
-					await this.EnterToFixed(com.fid, param);
-					break;
-				case FormType.Window:
-					await this.EnterToWindos(com.fid, param);
-					break;
-				case FormType.Tips:
-					await this.EnterToTips(com.fid, param);
-					break;
-				case FormType.Toast:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+			await this.EnterToTree(com.fid, param);
 			
 			return com;
 		}
@@ -133,24 +116,7 @@ namespace FrameWork {
 			}
 			this._closingForms[prefabUrl] = com;
 
-			switch (com.formType) {
-				case FormType.Screen:
-					await this.ExitToScreen(prefabUrl, param);
-					break;
-				case FormType.Fixed:
-					await this.ExitToFixed(prefabUrl, param);
-					break;
-				case FormType.Window:
-					await this.ExitToWindow(prefabUrl, param);
-					break;
-				case FormType.Tips:
-					await this.ExitToTips(prefabUrl, param);
-					break;
-				case FormType.Toast:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+			await this.ExitToTree(prefabUrl, param);
 			
 			this.DestroyForm(com);
 			
@@ -177,30 +143,19 @@ namespace FrameWork {
 			return com;
 		}
 
-		private async UniTask<bool> EnterToScreen(string fid, [CanBeNull] Object param) {
-			if (!this._allForms.ContainsKey(fid)) return false;
-			
-			var uniTasks = new UniTask<bool>[this._showingForms.Count];
-			var idx = 0;
-			foreach (var keyValuePair in this._showingForms) {
-				if(keyValuePair.Value.formType == FormType.Tips) continue;
-				uniTasks[idx] = keyValuePair.Value.CloseSelf();
-				idx++;
-			}
+		private async UniTask<bool> EnterToTree(string fid, [CanBeNull] Object param) {
+			// if (!this._allForms.ContainsKey(fid)) return false;
+			//
+			// var uniTasks = new UniTask<bool>[this._showingForms.Count];
+			// var idx = 0;
+			// foreach (var keyValuePair in this._showingForms) {
+			// 	if(keyValuePair.Value.formType == FormType.Tips) continue;
+			// 	uniTasks[idx] = keyValuePair.Value.CloseSelf();
+			// 	idx++;
+			// }
+			//
+			// await UniTask.WhenAll(uniTasks);
 
-			await UniTask.WhenAll(uniTasks);
-
-			var com = this._allForms[fid];
-			this._showingForms[fid] = com;
-			
-		 	await com._PreInit(param);
-			com.OnShow(param);
-			await com.OnShowEffect();
-			com.OnAfterShow(param);
-			return true;
-		}
-
-		private async UniTask<bool> EnterToFixed(string fid, Object param) {
 			var com = this._allForms[fid];
 			if(!com) return false;
 			await com._PreInit(param);
@@ -213,33 +168,7 @@ namespace FrameWork {
 			return true;
 		}
 
-		private async UniTask<bool> EnterToWindos(string fid, Object param) {
-			var com = this._allForms[fid];
-			if (!com) return false;
-			await com._PreInit(param);
-			
-			com.OnShow(param);
-			this._showingForms[fid] = com;
-			await com.OnShowEffect();
-			com.OnAfterShow(param);
-			
-			return true;
-		}
-
-		private async UniTask<bool> EnterToTips(string fid, Object param) {
-			var com = this._allForms[fid];
-			if (!com) return false;
-			await com._PreInit(param);
-			
-			com.OnShow(param);
-			this._showingForms[fid] = com;
-			await com.OnShowEffect();
-			com.OnAfterShow(param);
-
-			return true;
-		}
-
-		private async UniTask<bool> EnterToToast(UIBase com, Object param) {
+		public async UniTask<bool> EnterToToast(UIBase com, Object param) {
 			await com._PreInit(param);
 			
 			com.OnShow(param);
@@ -249,46 +178,10 @@ namespace FrameWork {
 			return true;
 		}
 
-		private async UniTask<bool> ExitToScreen(string fid, Object param) {
+		private async UniTask<bool> ExitToTree(string fid, Object param) {
 			var com = this._showingForms[fid];
 			if (!com) return false;
-			
-			com.OnHide(param);
-			await com.OnHideEffect();
-			com.OnAfterHide(param);
 
-			this._showingForms.Remove(fid);
-			return true;
-		}
-
-		private async UniTask<bool> ExitToFixed(string fid, Object param) {
-			var com = this._showingForms[fid];
-			if (!com) return false;
-			
-			com.OnHide(param);
-			await com.OnHideEffect();
-			com.OnAfterHide(param);
-
-			this._showingForms.Remove(fid);
-			return true;
-		}
-
-		private async UniTask<bool> ExitToWindow(string fid, Object param) {
-			var com = this._showingForms[fid];
-			if (!com) return false;
-			
-			com.OnHide(param);
-			await com.OnHideEffect();
-			com.OnAfterHide(param);
-
-			this._showingForms.Remove(fid);
-			return true;
-		}
-
-		private async UniTask<bool> ExitToTips(string fid, Object param) {
-			var com = this._showingForms[fid];
-			if (!com) return false;
-			
 			com.OnHide(param);
 			await com.OnHideEffect();
 			com.OnAfterHide(param);

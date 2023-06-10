@@ -1,15 +1,27 @@
+using JetBrains.Annotations;
+using UnityEngine;
+
 namespace FrameWork.Structure {
 	public struct IFormConfig {
 		public string prefabUrl;
 		public string type;
 	}
+
+	public delegate void OnClose();
+	
 	public struct IFormData {
 		public IFormConfig? loadingForm;
+		[CanBeNull] public OnClose OnClose;
 		public bool quickly;
+		// window 才有
+		public bool showWait; 
 		
 		public IFormData(IFormConfig? loadingForm, bool quickly = false) {
 			this.loadingForm = loadingForm;
 			this.quickly = quickly;
+
+			this.showWait = false;
+		   	this.OnClose = null;
 		}
 	}
 
@@ -55,5 +67,11 @@ namespace FrameWork.Structure {
 	public class PriorityElement<T> {
 		public T data;
 		public int priority;
+	}
+
+	public struct WindowData {
+		public IFormConfig formConfig;
+		[CanBeNull] public Object param;
+		public IFormData? formData;
 	}
 }
