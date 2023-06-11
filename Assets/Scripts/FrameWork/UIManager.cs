@@ -17,11 +17,13 @@ namespace FrameWork {
 		private RectTransform _NdToast;
 		private RectTransform _NdTips;
 
+		public RectTransform NdWindow => this._NdWindow;
+
 		private delegate UniTask<UIBase> OnLoadUIBase();
-		private readonly Dictionary<string, UIBase> _allForms = new Dictionary<string, UIBase>();
-		private readonly Dictionary<string, UIBase> _showingForms = new Dictionary<string, UIBase>();
-		private readonly Dictionary<string, ResourceRequest> _loadingForms = new Dictionary<string, ResourceRequest>();
-		private readonly Dictionary<string, UIBase> _closingForms = new Dictionary<string, UIBase>();
+		private readonly Dictionary<string, UIBase> allForms = new Dictionary<string, UIBase>();
+		public readonly Dictionary<string, UIBase> showingForms = new Dictionary<string, UIBase>();
+		private readonly Dictionary<string, ResourceRequest> loadingForms = new Dictionary<string, ResourceRequest>();
+		private readonly Dictionary<string, UIBase> closingForms = new Dictionary<string, UIBase>();
 
 		private static UIManager instance;
 		public static UIManager GetInstance() {
@@ -62,16 +64,16 @@ namespace FrameWork {
 		}
 
 		private async UniTask<GameObject> _LoadForm(string prefabPath) {
-			var requestLoad = this._loadingForms[prefabPath];
+			var requestLoad = this.loadingForms[prefabPath];
 			if (requestLoad != null) {
 				return await requestLoad as GameObject;
 			}
 			
 			var asyncLoad = Resources.LoadAsync<GameObject>(prefabPath);
 			
-			this._loadingForms[prefabPath] = asyncLoad;
+			this.loadingForms[prefabPath] = asyncLoad;
 			var gameObject = await asyncLoad as GameObject;
-			this._loadingForms.Remove(prefabPath);
+			this.loadingForms.Remove(prefabPath);
 
 			return Object.Instantiate(gameObject);
 		}
@@ -107,20 +109,20 @@ namespace FrameWork {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
 				return false;
 			}
-			var com = this._allForms[prefabUrl];
+			var com = this.allForms[prefabUrl];
 			if (!com) return false;
 
-			if (this._closingForms.ContainsKey(prefabUrl)) {
+			if (this.closingForms.ContainsKey(prefabUrl)) {
 				Debug.LogWarning("UIManager: form closing, please wait, prefabUrl: " + prefabUrl);
 				return false;
 			}
-			this._closingForms[prefabUrl] = com;
+			this.closingForms[prefabUrl] = com;
 
 			await this.ExitToTree(prefabUrl, param);
 			
 			this.DestroyForm(com);
 			
-			this._closingForms.Remove(prefabUrl);
+			this.closingForms.Remove(prefabUrl);
 			
 			return true;
 		}
@@ -138,30 +140,18 @@ namespace FrameWork {
 				_ => transform.parent
 			};
 
-			this._allForms[com.fid] = com;
+			this.allForms[com.fid] = com;
 
 			return com;
 		}
 
 		private async UniTask<bool> EnterToTree(string fid, [CanBeNull] Object param) {
-			// if (!this._allForms.ContainsKey(fid)) return false;
-			//
-			// var uniTasks = new UniTask<bool>[this._showingForms.Count];
-			// var idx = 0;
-			// foreach (var keyValuePair in this._showingForms) {
-			// 	if(keyValuePair.Value.formType == FormType.Tips) continue;
-			// 	uniTasks[idx] = keyValuePair.Value.CloseSelf();
-			// 	idx++;
-			// }
-			//
-			// await UniTask.WhenAll(uniTasks);
-
-			var com = this._allForms[fid];
+			var com = this.allForms[fid];
 			if(!com) return false;
 			await com._PreInit(param);
 			
 			com.OnShow(param);
-			this._showingForms[fid] = com;
+			this.showingForms[fid] = com;
 			await com.OnShowEffect();
 			com.OnAfterShow(param);
 			
@@ -179,14 +169,14 @@ namespace FrameWork {
 		}
 
 		private async UniTask<bool> ExitToTree(string fid, Object param) {
-			var com = this._showingForms[fid];
+			var com = this.showingForms[fid];
 			if (!com) return false;
 
 			com.OnHide(param);
 			await com.OnHideEffect();
 			com.OnAfterHide(param);
 
-			this._showingForms.Remove(fid);
+			this.showingForms.Remove(fid);
 			return true;
 		}
 
@@ -202,19 +192,19 @@ namespace FrameWork {
 		 * 销毁窗体
 		 */
 		private void DestroyForm(UIBase com) {
-			this._allForms.Remove(com.fid);
+			this.allForms.Remove(com.fid);
 		}
 
 		public bool CheckFormShowing(string prefabPath) {
-			return this._showingForms.ContainsKey(prefabPath);
+			return this.showingForms.ContainsKey(prefabPath);
 		}
 
 		public bool CheckFormLoading(string prefabPath) {
-			return this._loadingForms.ContainsKey(prefabPath);
+			return this.loadingForms.ContainsKey(prefabPath);
 		}
 
 		public UIBase GetForm(string prefabPath) {
-			return this._allForms[prefabPath];
+			return this.allForms[prefabPath];
 		}
 	}
 }

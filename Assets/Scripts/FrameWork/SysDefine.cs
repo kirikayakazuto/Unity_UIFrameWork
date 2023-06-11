@@ -4,7 +4,8 @@ namespace FrameWork {
 	public class SysDefine {
 		public static IFormConfig defaultLoadingForm = new IFormConfig();
 		/* 节点常量 */
-		public static string SYS_UIROOT_NODE = "ROOT";
+		public const string SYS_SCENE_NODE = "Scene";
+		public const string SYS_UIROOT_NODE = "ROOT";
 		public const string SYS_SCREEN_NODE = "Screen";
 		public const string SYS_FIXED_NODE = "Fixed";
 		public const string SYS_WINDOW_NODE = "Window";  

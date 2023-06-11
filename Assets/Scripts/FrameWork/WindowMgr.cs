@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using FrameWork.Structure;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace FrameWork {
 	public class WindowMgr {
@@ -10,13 +11,13 @@ namespace FrameWork {
 		
 		private readonly Stack<IFormConfig> _showingStack = new Stack<IFormConfig>();
 		private readonly Queue<WindowData> _watingQueue = new Queue<WindowData>();
-
-
+		
 		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
 			var prefabPath = formConfig.prefabUrl;
 
 			var showWait = formData?.showWait ?? false;
 			if (this._showingStack.Count <= 0 || (!showWait || this._watingQueue.Count <= 0)) {
+				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
 				var com= await UIManager.GetInstance().OpenForm(formConfig, param, formData);
 				this._showingStack.Push(formConfig);
 				com.gameObject.layer = this._showingStack.Count;
@@ -57,6 +58,9 @@ namespace FrameWork {
 			}
 			return true;
 		}
+
+
+		
 
 	
 		

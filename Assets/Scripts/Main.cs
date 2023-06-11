@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FrameWork;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,8 @@ public class Main : MonoBehaviour {
         for (var i = 0; i < gameObjects.Length; i++) {
             Debug.Log(gameObjects[i].name);
         }
+
+        UIManager.GetInstance();
     }
     
     void Update() {

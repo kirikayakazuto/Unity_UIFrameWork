@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FrameWork {
 	public class SceneMgr {
-		public SceneMgr instance { get; } = new SceneMgr();
+		public static SceneMgr instance { get; } = new SceneMgr();
 		
 
 		private IFormConfig currScene;
@@ -21,6 +21,19 @@ namespace FrameWork {
 			if (this.currScene.prefabUrl == prefabUrl) {
 				Debug.LogWarning("SceneMgr: curr scene == open scene, prefabUrl: " + prefabUrl);
 				return null;
+			}
+			
+			// 关闭其他显示中的UI
+			var showingForms = UIManager.GetInstance().showingForms;
+			if (showingForms.Count > 0) {
+				var uniTasks = new UniTask<bool>[showingForms.Count];
+				var idx = 0;
+				foreach (var keyValuePair in showingForms) {
+					if(keyValuePair.Value.formType == FormType.Tips) continue;
+					uniTasks[idx] = keyValuePair.Value.CloseSelf();
+					idx++;
+				}
+				await UniTask.WhenAll(uniTasks);	
 			}
 			
 			await this.OpenLoading(param, formData);

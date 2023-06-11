@@ -61,5 +61,9 @@ namespace FrameWork {
 			return false;
 		}
 
+
+		public override bool Equals(object o) {
+			return o != null && ((UIBase) o).fid.Equals(this.fid);
+		}
 	}
 }

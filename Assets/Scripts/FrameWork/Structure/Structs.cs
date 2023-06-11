@@ -55,12 +55,14 @@ namespace FrameWork.Structure {
 	}
 
 	public class ModalType {
+		public bool useEase;
 		public ModalOpacity opacity;
 		public bool clickMaskClose;
 
-		public ModalType(ModalOpacity opacity = ModalOpacity.OpacityHalf, bool clickMaskClose = true) {
+		public ModalType(ModalOpacity opacity = ModalOpacity.OpacityHalf, bool clickMaskClose = true, bool useEase = true) {
 			this.opacity = opacity;
 			this.clickMaskClose = clickMaskClose;
+			this.useEase = useEase;
 		}
 	}
 
