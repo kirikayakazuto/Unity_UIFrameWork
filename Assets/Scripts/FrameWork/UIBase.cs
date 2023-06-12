@@ -9,7 +9,8 @@ using Object = UnityEngine.Object;
 namespace FrameWork {
 	public abstract class UIBase: MonoBehaviour {
 		// 唯一id
-		public string fid;
+		[NonSerialized]
+		public string fid = "";
 		// 窗体数据
 		public IFormData formData;
 		// 窗体类型
