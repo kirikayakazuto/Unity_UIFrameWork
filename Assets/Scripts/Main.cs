@@ -13,7 +13,7 @@ public class Main : MonoBehaviour {
     }
     
     private void Start() {
-        FormMgr.Open(UIConfigs.UIHome, null, null).Forget();
+        FormMgr.Open(UIConfigs.UIHome, null).Forget();
     }
     
     void Update() {

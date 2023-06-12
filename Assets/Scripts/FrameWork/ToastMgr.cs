@@ -12,7 +12,7 @@ namespace FrameWork {
         private readonly Dictionary<string, ObjectPool<UIToast>> pools = new Dictionary<string, ObjectPool<UIToast>>();
         private readonly Dictionary<string, List<UIToast>> showingList = new Dictionary<string, List<UIToast>>();
 
-        public async UniTask<UIToast> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+        public async UniTask<UIToast> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
             if (!this.pools.TryGetValue(formConfig.prefabUrl, out var pool)) {
                 pool = await this.GenPool(formConfig.prefabUrl);
                 this.pools[formConfig.prefabUrl] = pool;

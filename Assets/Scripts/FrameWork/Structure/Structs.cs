@@ -7,21 +7,25 @@ namespace FrameWork.Structure {
 		public FormType type;
 	}
 
+	public delegate void OnOpen(UIBase com);
 	public delegate void OnClose();
 	
 	public struct IFormData {
 		public IFormConfig? loadingForm;
-		[CanBeNull] public OnClose OnClose;
+		[CanBeNull] public OnOpen onOpenBeforShowEffect;
+		[CanBeNull] public OnClose onCloseBeforHideEffect;
+		[CanBeNull] public OnClose onClose;
 		public bool quickly;
 		// window 才有
 		public bool showWait; 
 		
-		public IFormData(IFormConfig? loadingForm, bool quickly = false) {
+		public IFormData(IFormConfig? loadingForm) {
 			this.loadingForm = loadingForm;
-			this.quickly = quickly;
-
+			this.quickly = false;
 			this.showWait = false;
-		   	this.OnClose = null;
+		   	this.onClose = null;
+		    this.onOpenBeforShowEffect = null;
+		    this.onCloseBeforHideEffect = null;
 		}
 	}
 
@@ -74,6 +78,6 @@ namespace FrameWork.Structure {
 	public struct WindowData {
 		public IFormConfig formConfig;
 		[CanBeNull] public Object param;
-		public IFormData? formData;
+		public IFormData formData;
 	}
 }

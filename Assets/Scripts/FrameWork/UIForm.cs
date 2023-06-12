@@ -21,9 +21,10 @@ namespace FrameWork {
 		public ModalType modalType = new ModalType();
 
 		public override async UniTask<bool> OnShowEffect() {
-			var rectTransform = this.GetComponent<RectTransform>();
-		 	await rectTransform.DOScale(Vector3.one, 0.3f);
-		    return true;
+			this.rectTransform.localScale = new Vector3(0, 0, 0);
+			this.rectTransform.DOScale(new Vector3(1f, 1f, 1f), 0.3f);
+			await UniTask.Delay(300);
+			return true;
 		}
 	}
 

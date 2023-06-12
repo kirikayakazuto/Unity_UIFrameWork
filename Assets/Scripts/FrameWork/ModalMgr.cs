@@ -15,7 +15,9 @@ namespace FrameWork {
             this._image = this.GenSingleColorImage();
             var ndWindow = UIManager.GetInstance().NdWindow;
             this._image.rectTransform.SetParent(ndWindow);
-            this._image.rectTransform.rect.Set(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height);
+            this._image.color = new Color(0, 0, 0, 0);
+            this._image.rectTransform.localPosition = new Vector3(0, 0, 0);
+            this._image.rectTransform.sizeDelta = new Vector2(UnityEngine.Screen.width, UnityEngine.Screen.height);
             this._image.gameObject.SetActive(false);
         }
         
@@ -23,7 +25,7 @@ namespace FrameWork {
             var goImage = new GameObject();
             var button = goImage.AddComponent<Button>();
             button.onClick.AddListener(() => {
-                WindowMgr.instance.CloseTop(null, null).Forget();
+                WindowMgr.instance.CloseTop(null).Forget();
             });
             goImage.AddComponent<RectTransform>();
             return goImage.AddComponent<Image>();
@@ -39,25 +41,30 @@ namespace FrameWork {
                 ModalOpacity.OpacityFull => 1f,
                 _ => throw new ArgumentOutOfRangeException()
             };
+            this._image.gameObject.SetActive(true);
             var color = new Color(0, 0, 0, o);
-            if (modalType.useEase) await this._image.DOColor(color, 0.3f);
+            if (modalType.useEase) {
+                this._image.DOColor(color, 0.2f);
+                await UniTask.Delay(300);
+            }
             else this._image.color = color;
             return true;
         }
 
         public void CheckModalWindow(IFormConfig[] formConfigs) {
+
             if (formConfigs.Length <= 0) {
                 this._image.gameObject.SetActive(false);
                 return;;
             }
             
-            this._image.gameObject.SetActive(true);
             var button = this._image.GetComponent<Button>();
             
             for (var i = formConfigs.Length - 1; i >= 0; i--) {
                 var com = UIManager.GetInstance().GetForm(formConfigs[i].prefabUrl) as UIWindow;
+                if(com == null) continue;
                 if (com.modalType.opacity <= 0) continue;
-                this._image.gameObject.layer = com.gameObject.layer;
+                this._image.rectTransform.SetSiblingIndex(i);
                 this.ShowModal(com.modalType).Forget();
                 break;
             }

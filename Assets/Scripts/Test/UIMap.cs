@@ -1,14 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using FrameWork;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class UIMap : MonoBehaviour {
-    
-    void Start() {
-        
-    }
+namespace Test {
+    public class UIMap : UIScreen {
 
-    void Update() {
+        public Button UpgradeButton;
         
+        public override void OnInit(Object param) {
+            FormMgr.Open(UIConfigs.UIBackButton, null).Forget();
+        }
+
+        void Start() {
+            this.UpgradeButton.onClick.AddListener(() => {
+                FormMgr.Open(UIConfigs.UIUpgrade, null).Forget();
+            });
+        }
+
+        void Update() {
+        
+        }
     }
 }

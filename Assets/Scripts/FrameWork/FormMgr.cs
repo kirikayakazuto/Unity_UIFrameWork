@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace FrameWork {
     public class FormMgr {
-        public static async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+        public static async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
             return formConfig.type switch {
                 FormType.Screen => await SceneMgr.instance.Open(formConfig, param, formData),
                 FormType.Fixed => await FixedMgr.instance.Open(formConfig, param, formData),
@@ -18,7 +18,7 @@ namespace FrameWork {
             };
         }
 
-        public static async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+        public static async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
             return formConfig.type switch {
                 FormType.Screen => await SceneMgr.instance.Close(formConfig, param, formData),
                 FormType.Fixed => await FixedMgr.instance.Close(formConfig, param, formData),
@@ -28,7 +28,7 @@ namespace FrameWork {
             };
         }
 
-        public static async UniTask<bool> BackScene([CanBeNull] Object param, IFormData? formData) {
+        public static async UniTask<bool> BackScene([CanBeNull] Object param, IFormData formData = new IFormData()) {
             return await SceneMgr.instance.Back(param, formData);
         }
 

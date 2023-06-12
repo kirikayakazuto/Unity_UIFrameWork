@@ -65,9 +65,10 @@ namespace FrameWork {
 		}
 
 		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {
+			if (this.allForms.TryGetValue(formConfig.prefabUrl, out var com)) return com;
 			var gameObject = await this._LoadForm(formConfig.prefabUrl);
 			if (gameObject == null) return null;
-			var com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
+			com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
 			this.allForms[formConfig.prefabUrl] = com;
 			return com;
 		}
@@ -84,10 +85,12 @@ namespace FrameWork {
 			var gameObject = await asyncLoad as GameObject;
 			if (!this.loadingForms.Remove(prefabPath)) return null;
 
+			if (gameObject == null) return null;
+			gameObject.SetActive(false);
 			return Object.Instantiate(gameObject);
 		}
 
-		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
 			
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
@@ -106,21 +109,21 @@ namespace FrameWork {
 			}
 			
 			com.fid = prefabUrl;
-			com.formData = formData ?? new IFormData();
+			com.formData = formData;
 
+			formData.onOpenBeforShowEffect?.Invoke(com);
 			await this.EnterToTree(com.fid, param);
-			
+
 			return com;
 		}
 
-		public async UniTask<bool> CloseForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+		public async UniTask<bool> CloseForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
 				return false;
 			}
-
-			Debug.Log("close form : " + prefabUrl);
+			
 			if (!this.allForms.TryGetValue(prefabUrl, out var com)) {
 				Debug.LogWarning("UIManager: all forms do not have prefabUrl, prefabUrl: " + prefabUrl);
 				return false;
@@ -130,18 +133,31 @@ namespace FrameWork {
 				Debug.LogWarning("UIManager: form closing, please wait, prefabUrl: " + prefabUrl);
 				return false;
 			}
+			
 			this.closingForms[prefabUrl] = com;
 
+			formData.onCloseBeforHideEffect?.Invoke();
 			await this.ExitToTree(prefabUrl, param);
 			
-			this.DestroyForm(com);
+			formData.onClose?.Invoke();
 
+			switch (com.closeType) {
+				case CloseType.Destory:
+					this.DestroyForm(com);
+					break;
+				case CloseType.Hide:
+					break;
+				case CloseType.LRU:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			
 			return this.closingForms.Remove(prefabUrl);
 		}
 
 		public UIBase AddTransformTree(RectTransform transform) {
 			var com = transform.GetComponent<UIBase>();
-			transform.gameObject.SetActive(false);
 			
 			transform.SetParent(com.formType switch {
 				FormType.Screen => this._NdScreen,
@@ -161,8 +177,8 @@ namespace FrameWork {
 			if (!this.allForms.TryGetValue(fid, out var com)) return false;
 			await com._PreInit(param);
 			com.OnShow(param);
-			this.showingForms[fid] = com;
 			com.gameObject.SetActive(true);
+			this.showingForms[fid] = com;
 			await com.OnShowEffect();
 			com.OnAfterShow(param);
 			
@@ -171,10 +187,9 @@ namespace FrameWork {
 
 		public async UniTask<bool> EnterToToast(UIBase com, Object param) {
 			await com._PreInit(param);
-			
 			com.OnShow(param);
-			await com.OnShowEffect();
 			com.gameObject.SetActive(true);
+			await com.OnShowEffect();
 			com.OnAfterShow(param);
 			
 			return true;

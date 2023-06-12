@@ -12,15 +12,18 @@ namespace FrameWork {
 		private readonly Stack<IFormConfig> _showingStack = new Stack<IFormConfig>();
 		private readonly Queue<WindowData> _watingQueue = new Queue<WindowData>();
 		
-		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
-			var prefabPath = formConfig.prefabUrl;
-
-			var showWait = formData?.showWait ?? false;
-			if (this._showingStack.Count <= 0 || (!showWait || this._watingQueue.Count <= 0)) {
+		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+			
+			formData.onOpenBeforShowEffect = (UIBase com) => {
 				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
-				var com= await UIManager.GetInstance().OpenForm(formConfig, param, formData);
+			};
+
+			var showWait = formData.showWait;
+			if (this._showingStack.Count <= 0 || (!showWait || this._watingQueue.Count <= 0)) {
 				this._showingStack.Push(formConfig);
-				com.gameObject.layer = this._showingStack.Count;
+				var com= await UIManager.GetInstance().OpenForm(formConfig, param, formData);
+				com.rectTransform.SetSiblingIndex(this._showingStack.Count);
+				
 				return com;
 			}
 
@@ -30,9 +33,14 @@ namespace FrameWork {
 			return await UIManager.GetInstance().LoadForm(formConfig);
 		}
 
-		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
 			if (!this._showingStack.Contains(formConfig)) return false;
 			if (!Utils.RemoveAtStack(this._showingStack, formConfig)) return false;
+			
+			formData.onCloseBeforHideEffect = () => {
+				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
+			};
+			
 			await UIManager.GetInstance().CloseForm(formConfig, param, formData);
 			if (this._watingQueue.TryDequeue(out var windowData)) {
 				await this.Open(windowData.formConfig, windowData.param, windowData.formData);
@@ -40,10 +48,16 @@ namespace FrameWork {
 			return true; 
 		}
 
-		public async UniTask<bool> CloseTop([CanBeNull] Object param, IFormData? formData) {
+		public async UniTask<bool> CloseTop([CanBeNull] Object param, IFormData formData = new IFormData()) {
 			if (this._showingStack.Count <= 0) return false;
+
+			formData.onCloseBeforHideEffect = () => {
+				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
+			};
+			
 			var formConfig = this._showingStack.Pop();
 			await UIManager.GetInstance().CloseForm(formConfig, param, formData);
+			
 			if (this._watingQueue.TryDequeue(out var windowData)) {
 				await this.Open(windowData.formConfig, windowData.param, windowData.formData);
 			}
@@ -54,7 +68,7 @@ namespace FrameWork {
 		public async UniTask<bool> CloseAll() {
 			while (this._showingStack.Count > 0) {
 				var formConfig = this._showingStack.Pop();
-				await UIManager.GetInstance().CloseForm(formConfig, null, null);
+				await UIManager.GetInstance().CloseForm(formConfig, null);
 			}
 			return true;
 		}

@@ -19,17 +19,15 @@ namespace FrameWork {
 		public abstract CloseType closeType { get; set; }
 		/** 是否已经调用过 pre init 方法 */
 		private bool _inited = false;
-
-		[NonSerialized]
+		
 		public RectTransform rectTransform;
 
 		public async UniTask<bool> _PreInit([CanBeNull] Object param) {
 			if(this._inited) return true;
 			this._inited = true;
 
-			this.rectTransform = this.gameObject.GetComponent<RectTransform>();
-			
-		 	await this.Load();
+			this.rectTransform = this.GetComponent<RectTransform>();
+			await this.Load();
 		    
 		    this.OnInit(param);
 		    return true;
@@ -39,22 +37,17 @@ namespace FrameWork {
 			await UniTask.Delay(1);
 			return false;
 		}
+
 		/** 初始化, 只会调用一次 */
 		public virtual void OnInit([CanBeNull] Object param) { }
 
 		public virtual void OnShow([CanBeNull] Object param) { }
 
-		public virtual async UniTask<bool> OnAfterShow([CanBeNull] Object param) {
-			await UniTask.Delay(1);
-			return false;
-		}
+		public virtual void OnAfterShow([CanBeNull] Object param) { }
 
 		public virtual void OnHide([CanBeNull] Object param) { }
 
-		public virtual async UniTask<bool> OnAfterHide([CanBeNull] Object param) {
-			await UniTask.Delay(1);
-			return false;
-		}
+		public virtual void OnAfterHide([CanBeNull] Object param) { }
 
 		/** 出现动画 */
 		public virtual async UniTask<bool> OnShowEffect() {
@@ -73,7 +66,7 @@ namespace FrameWork {
 			
 		}
 
-		public async UniTask<bool> CloseSelf([CanBeNull] Object param, IFormData? tFormData) {
+		public async UniTask<bool> CloseSelf([CanBeNull] Object param, IFormData tFormData = new IFormData()) {
 			return await UIManager.GetInstance().CloseForm(new IFormConfig() {prefabUrl = this.fid, type = this.formType}, param, tFormData);
 		}
 		
