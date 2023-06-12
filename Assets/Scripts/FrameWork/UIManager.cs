@@ -43,29 +43,38 @@ namespace FrameWork {
 				return self;
 			}
 			self._UIROOT = new GameObject(SysDefine.SYS_UIROOT_NODE).AddComponent<RectTransform>();
-			self._UIROOT.parent = scene;
+			self._UIROOT.SetParent(scene);
+			self._UIROOT.localPosition = Vector3.zero;
 			self._NdScreen = new GameObject(SysDefine.SYS_SCREEN_NODE).AddComponent<RectTransform>();
-			self._NdScreen.parent = self._UIROOT;
+			self._NdScreen.SetParent(self._UIROOT);
+			self._NdScreen.localPosition = Vector3.zero;
 			self._NdFixed = new GameObject(SysDefine.SYS_FIXED_NODE).AddComponent<RectTransform>();
-			self._NdFixed.parent = self._UIROOT;
+			self._NdFixed.SetParent(self._UIROOT);
+			self._NdFixed.localPosition = Vector3.zero;
 			self._NdWindow = new GameObject(SysDefine.SYS_WINDOW_NODE).AddComponent<RectTransform>();
-			self._NdWindow.parent = self._UIROOT;
+			self._NdWindow.SetParent(self._UIROOT);
+			self._NdWindow.localPosition = Vector3.zero;
 			self._NdToast = new GameObject(SysDefine.SYS_TOAST_NODE).AddComponent<RectTransform>();
-			self._NdToast.parent = self._UIROOT;
+			self._NdToast.SetParent(self._UIROOT);
+			self._NdToast.localPosition = Vector3.zero;
 			self._NdTips = new GameObject(SysDefine.SYS_TIPS_NODE).AddComponent<RectTransform>();
-			self._NdTips.parent = self._UIROOT;
+			self._NdTips.SetParent(self._UIROOT);
+			self._NdTips.localPosition = Vector3.zero;
 			
 			return UIManager.instance;
 		}
 
 		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {
 			var gameObject = await this._LoadForm(formConfig.prefabUrl);
-			return gameObject == null ? null : this.AddTransformTree(gameObject.GetComponent<RectTransform>());
+			if (gameObject == null) return null;
+			var com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
+			this.allForms[formConfig.prefabUrl] = com;
+			return com;
 		}
 
 		private async UniTask<GameObject> _LoadForm(string prefabPath) {
-			var requestLoad = this.loadingForms[prefabPath];
-			if (requestLoad != null) {
+			
+			if (this.loadingForms.TryGetValue(prefabPath, out var requestLoad)) {
 				return await requestLoad as GameObject;
 			}
 			
@@ -73,18 +82,19 @@ namespace FrameWork {
 			
 			this.loadingForms[prefabPath] = asyncLoad;
 			var gameObject = await asyncLoad as GameObject;
-			this.loadingForms.Remove(prefabPath);
+			if (!this.loadingForms.Remove(prefabPath)) return null;
 
 			return Object.Instantiate(gameObject);
 		}
 
 		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
+			
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
 				return null;
 			}
-
+			
 			if (this.CheckFormShowing(prefabUrl)) {
 				Debug.LogWarning("UIManager: open form error form is showing, prefabUrl: " + prefabUrl);
 				return null;
@@ -109,8 +119,8 @@ namespace FrameWork {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
 				return false;
 			}
-			var com = this.allForms[prefabUrl];
-			if (!com) return false;
+			
+			if (!this.allForms.TryGetValue(prefabUrl, out var com)) return false;
 
 			if (this.closingForms.ContainsKey(prefabUrl)) {
 				Debug.LogWarning("UIManager: form closing, please wait, prefabUrl: " + prefabUrl);
@@ -122,36 +132,35 @@ namespace FrameWork {
 			
 			this.DestroyForm(com);
 			
-			this.closingForms.Remove(prefabUrl);
-			
-			return true;
+			return this.closingForms.Remove(prefabUrl);
 		}
 
 		public UIBase AddTransformTree(RectTransform transform) {
 			var com = transform.GetComponent<UIBase>();
 			transform.gameObject.SetActive(false);
-
-			transform.parent = com.formType switch {
+			
+			transform.SetParent(com.formType switch {
 				FormType.Screen => this._NdScreen,
 				FormType.Fixed => this._NdFixed,
 				FormType.Window => this._NdWindow,
 				FormType.Toast => this._NdToast,
 				FormType.Tips => this._NdTips,
 				_ => transform.parent
-			};
-
+			});
+			
+			transform.localPosition = Vector3.zero;
+			
 			this.allForms[com.fid] = com;
-
+			
 			return com;
 		}
 
 		private async UniTask<bool> EnterToTree(string fid, [CanBeNull] Object param) {
-			var com = this.allForms[fid];
-			if(!com) return false;
+			if (!this.allForms.TryGetValue(fid, out var com)) return false;
 			await com._PreInit(param);
-			
 			com.OnShow(param);
 			this.showingForms[fid] = com;
+			com.gameObject.SetActive(true);
 			await com.OnShowEffect();
 			com.OnAfterShow(param);
 			
@@ -163,26 +172,27 @@ namespace FrameWork {
 			
 			com.OnShow(param);
 			await com.OnShowEffect();
+			com.gameObject.SetActive(true);
 			com.OnAfterShow(param);
 			
 			return true;
 		}
 
 		private async UniTask<bool> ExitToTree(string fid, Object param) {
-			var com = this.showingForms[fid];
-			if (!com) return false;
-
+			if (!this.showingForms.TryGetValue(fid, out var com)) return false;
+			
 			com.OnHide(param);
 			await com.OnHideEffect();
+			com.gameObject.SetActive(false);
 			com.OnAfterHide(param);
 
-			this.showingForms.Remove(fid);
-			return true;
+			return this.showingForms.Remove(fid);
 		}
 
 		public async UniTask<bool> ExitToToast(UIBase com, Object param) {
 			com.OnHide(param);
 			await com.OnHideEffect();
+			com.gameObject.SetActive(false); 
 			com.OnAfterHide(param);
 
 			return true;
@@ -204,7 +214,10 @@ namespace FrameWork {
 		}
 
 		public UIBase GetForm(string prefabPath) {
-			return this.allForms[prefabPath];
+			if (this.allForms.ContainsKey(prefabPath)) {
+				return this.allForms[prefabPath];
+			}
+			return null;
 		}
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FrameWork {
     public class FixedMgr {
-        public FixedMgr instance { get; } = new FixedMgr();
+        public static FixedMgr instance { get; } = new FixedMgr();
         
         public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
             return await UIManager.GetInstance().OpenForm(formConfig, param, formData);

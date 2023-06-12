@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FrameWork.Structure {
 	public struct IFormConfig {
 		public string prefabUrl;
-		public string type;
+		public FormType type;
 	}
 
 	public delegate void OnClose();

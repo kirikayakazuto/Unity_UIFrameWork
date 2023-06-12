@@ -32,12 +32,12 @@ namespace FrameWork {
 
 		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData? formData) {
 			if (!this._showingStack.Contains(formConfig)) return false;
-			Utils.RemoveAtStack(this._showingStack, formConfig);
+			if (!Utils.RemoveAtStack(this._showingStack, formConfig)) return false;
 			await UIManager.GetInstance().CloseForm(formConfig, param, formData);
 			if (this._watingQueue.TryDequeue(out var windowData)) {
 				await this.Open(windowData.formConfig, windowData.param, windowData.formData);
 			}
-			return true;
+			return true; 
 		}
 
 		public async UniTask<bool> CloseTop([CanBeNull] Object param, IFormData? formData) {

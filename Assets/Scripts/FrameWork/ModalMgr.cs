@@ -14,7 +14,8 @@ namespace FrameWork {
         public ModalMgr() {
             this._image = this.GenSingleColorImage();
             var ndWindow = UIManager.GetInstance().NdWindow;
-            this._image.rectTransform.parent = ndWindow;
+            this._image.rectTransform.SetParent(ndWindow);
+            this._image.rectTransform.rect.Set(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height);
             this._image.gameObject.SetActive(false);
         }
         

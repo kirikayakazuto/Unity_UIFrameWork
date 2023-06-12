@@ -8,7 +8,6 @@ namespace FrameWork {
 	public class SceneMgr {
 		public static SceneMgr instance { get; } = new SceneMgr();
 		
-
 		private IFormConfig currScene;
 		private readonly Stack<IFormConfig> scenes = new Stack<IFormConfig>();
 
@@ -22,7 +21,6 @@ namespace FrameWork {
 				Debug.LogWarning("SceneMgr: curr scene == open scene, prefabUrl: " + prefabUrl);
 				return null;
 			}
-			
 			// 关闭其他显示中的UI
 			var showingForms = UIManager.GetInstance().showingForms;
 			if (showingForms.Count > 0) {
@@ -30,7 +28,7 @@ namespace FrameWork {
 				var idx = 0;
 				foreach (var keyValuePair in showingForms) {
 					if(keyValuePair.Value.formType == FormType.Tips) continue;
-					uniTasks[idx] = keyValuePair.Value.CloseSelf();
+					uniTasks[idx] = keyValuePair.Value.CloseSelf(param, formData);
 					idx++;
 				}
 				await UniTask.WhenAll(uniTasks);	
@@ -40,10 +38,9 @@ namespace FrameWork {
 			
 			if (this.scenes.Count > 0) {
 				var scene = this.scenes.Peek();
-				await UIManager.GetInstance().CloseForm(this.currScene, param, formData);
+				await UIManager.GetInstance().CloseForm(scene, param, formData);
 			}
 			this.currScene = formConfig;
-
 			var com = await UIManager.GetInstance().OpenForm(formConfig, param, formData);
 			
 			await this.CloseLoading(param, formData);
@@ -75,13 +72,15 @@ namespace FrameWork {
 		}
 
 		private async UniTask<UIBase> OpenLoading([CanBeNull] Object param, IFormData? formData) {
-			var loadingForm = formData?.loadingForm ?? SysDefine.defaultLoadingForm; 
+			var loadingForm = formData?.loadingForm ?? SysDefine.defaultLoadingForm;
+			if (loadingForm.prefabUrl.Length <= 0) return null;
 			await TipsMgr.instance.Open(loadingForm, param, formData);
 			return null;
 		}
 
 		private async UniTask<bool> CloseLoading([CanBeNull] Object param, IFormData? formData) {
 			var loadingForm = formData?.loadingForm ?? SysDefine.defaultLoadingForm; 
+			if (loadingForm.prefabUrl.Length <= 0) return false;
 			await TipsMgr.instance.Close(loadingForm, param, formData);
 			return true;
 		}

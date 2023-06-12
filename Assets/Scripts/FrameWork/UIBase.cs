@@ -1,8 +1,10 @@
+using System;
 using FrameWork.Structure;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using JetBrains.Annotations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace FrameWork {
 	public abstract class UIBase: MonoBehaviour {
@@ -26,7 +28,11 @@ namespace FrameWork {
 		    this.OnInit(param);
 		    return true;
 		}
-		public virtual async UniTask<bool> Load() { return false; }
+
+		public virtual async UniTask<bool> Load() {
+			await UniTask.Delay(1);
+			return false;
+		}
 		/** 初始化, 只会调用一次 */
 		public virtual void OnInit([CanBeNull] Object param) { }
 
@@ -40,30 +46,31 @@ namespace FrameWork {
 
 		/** 出现动画 */
 		public virtual async UniTask<bool> OnShowEffect() {
-			
-			// var task = Task.Run()
-			var rectTransform = this.GetComponent<RectTransform>();
-			rectTransform.DOScale(new Vector3(1, 1, 1), 1).OnComplete(() => {
-
-			});
-			
+			await UniTask.DelayFrame(1);
 			return false;
 		}
+
 		/** 隐藏动画 */
-		public virtual async UniTask<bool> OnHideEffect() { return false; }
+		public virtual async UniTask<bool> OnHideEffect() {
+			await UniTask.DelayFrame(1);
+			return false;
+		}
 		
 		/** 屏蔽触摸事件 */
 		public void SetBlockInput(bool block) {
 			
 		}
 
-		public async UniTask<bool> CloseSelf() {
-			return false;
+		public async UniTask<bool> CloseSelf([CanBeNull] Object param, IFormData? tFormData) {
+			return await UIManager.GetInstance().CloseForm(new IFormConfig() {prefabUrl = this.fid, type = this.formType}, param, tFormData);
+		}
+		
+		protected bool Equals(UIBase other) {
+			return base.Equals(other) && this.fid == other.fid;
 		}
 
-
-		public override bool Equals(object o) {
-			return o != null && ((UIBase) o).fid.Equals(this.fid);
+		public override int GetHashCode() {
+			return HashCode.Combine(base.GetHashCode(), this.fid);
 		}
 	}
 }
