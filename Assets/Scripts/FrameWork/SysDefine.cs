@@ -2,7 +2,7 @@ using FrameWork.Structure;
 
 namespace FrameWork {
 	public class SysDefine {
-		public static IFormConfig defaultLoadingForm = new IFormConfig() { prefabUrl = "", type = FormType.Screen};
+		public static IFormConfig defaultLoadingForm = UIConfigs.UILoading;
 		/* 节点常量 */
 		public const string SYS_SCENE_NODE = "Scene";
 		public const string SYS_UIROOT_NODE = "ROOT";

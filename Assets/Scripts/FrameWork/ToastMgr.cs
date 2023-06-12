@@ -46,7 +46,9 @@ namespace FrameWork {
                     pool.Release(arr[i]);
                 }
                 arr.Clear();
-                this.showingList.Remove(prefabUrl);    
+                if(!this.showingList.Remove(prefabUrl)) {
+                    
+                }
             }
             pool.Clear();
             return this.pools.Remove(prefabUrl);

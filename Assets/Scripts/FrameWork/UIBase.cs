@@ -20,9 +20,14 @@ namespace FrameWork {
 		/** 是否已经调用过 pre init 方法 */
 		private bool _inited = false;
 
+		[NonSerialized]
+		public RectTransform rectTransform;
+
 		public async UniTask<bool> _PreInit([CanBeNull] Object param) {
 			if(this._inited) return true;
 			this._inited = true;
+
+			this.rectTransform = this.gameObject.GetComponent<RectTransform>();
 			
 		 	await this.Load();
 		    
@@ -39,11 +44,17 @@ namespace FrameWork {
 
 		public virtual void OnShow([CanBeNull] Object param) { }
 
-		public virtual void OnAfterShow([CanBeNull] Object param) { }
+		public virtual async UniTask<bool> OnAfterShow([CanBeNull] Object param) {
+			await UniTask.Delay(1);
+			return false;
+		}
 
 		public virtual void OnHide([CanBeNull] Object param) { }
 
-		public virtual void OnAfterHide([CanBeNull] Object param) { }
+		public virtual async UniTask<bool> OnAfterHide([CanBeNull] Object param) {
+			await UniTask.Delay(1);
+			return false;
+		}
 
 		/** 出现动画 */
 		public virtual async UniTask<bool> OnShowEffect() {

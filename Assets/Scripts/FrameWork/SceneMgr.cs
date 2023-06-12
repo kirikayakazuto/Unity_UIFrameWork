@@ -36,12 +36,13 @@ namespace FrameWork {
 			
 			await this.OpenLoading(param, formData);
 			
-			if (this.scenes.Count > 0) {
-				var scene = this.scenes.Peek();
-				await UIManager.GetInstance().CloseForm(scene, param, formData);
-			}
+			// if (this.scenes.Count > 0) {
+			// 	var scene = this.scenes.Peek();
+			// 	await UIManager.GetInstance().CloseForm(scene, param, formData);
+			// }
 			this.currScene = formConfig;
 			var com = await UIManager.GetInstance().OpenForm(formConfig, param, formData);
+			this.scenes.Push(formConfig);
 			
 			await this.CloseLoading(param, formData);
 			

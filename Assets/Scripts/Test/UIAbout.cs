@@ -1,10 +1,16 @@
+using Cysharp.Threading.Tasks;
 using FrameWork;
+using UnityEngine.UI;
 
 namespace Test {
     public class UIAbout : UIScreen {
-    
-        void Start() {
-        
+
+        public Button BackButton;
+
+        private void Start() {
+            this.BackButton.onClick.AddListener((() => {
+                FormMgr.BackScene(null, null).Forget();
+            }));
         }
 
         void Update() {

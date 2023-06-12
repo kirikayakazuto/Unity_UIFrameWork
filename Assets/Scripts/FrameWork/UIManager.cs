@@ -119,8 +119,12 @@ namespace FrameWork {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
 				return false;
 			}
-			
-			if (!this.allForms.TryGetValue(prefabUrl, out var com)) return false;
+
+			Debug.Log("close form : " + prefabUrl);
+			if (!this.allForms.TryGetValue(prefabUrl, out var com)) {
+				Debug.LogWarning("UIManager: all forms do not have prefabUrl, prefabUrl: " + prefabUrl);
+				return false;
+			}
 
 			if (this.closingForms.ContainsKey(prefabUrl)) {
 				Debug.LogWarning("UIManager: form closing, please wait, prefabUrl: " + prefabUrl);
@@ -131,7 +135,7 @@ namespace FrameWork {
 			await this.ExitToTree(prefabUrl, param);
 			
 			this.DestroyForm(com);
-			
+
 			return this.closingForms.Remove(prefabUrl);
 		}
 
@@ -149,8 +153,6 @@ namespace FrameWork {
 			});
 			
 			transform.localPosition = Vector3.zero;
-			
-			this.allForms[com.fid] = com;
 			
 			return com;
 		}
@@ -218,6 +220,19 @@ namespace FrameWork {
 				return this.allForms[prefabPath];
 			}
 			return null;
+		}
+
+		public void LogAllDictionary() {
+			Debug.Log("=====> AllForms");
+			this.LogDictionary(this.allForms);
+			Debug.Log("=====> ShowingForms");
+			this.LogDictionary(this.showingForms);
+		}
+		
+		public void LogDictionary(Dictionary<string , UIBase> dic) {
+			foreach (var keyValuePair in dic) {
+				Debug.Log(keyValuePair.Key + " : " + keyValuePair.Value.fid);
+			}
 		}
 	}
 }
