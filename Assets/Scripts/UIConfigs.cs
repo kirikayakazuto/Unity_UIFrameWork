@@ -13,4 +13,6 @@ public static class UIConfigs {
     public static IFormConfig UIMap = new IFormConfig() {prefabUrl = "Forms/Screens/UIMap", type = FormType.Screen};
     
     public static IFormConfig UIUpgrade = new IFormConfig() {prefabUrl = "Forms/Windows/UIUpgrade", type = FormType.Window};
+    
+    public static IFormConfig UICompleted = new IFormConfig() {prefabUrl = "Forms/Windows/UICompleted", type = FormType.Window};
 }

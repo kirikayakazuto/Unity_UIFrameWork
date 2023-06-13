@@ -22,7 +22,7 @@ namespace FrameWork {
         }
         
         private Image GenSingleColorImage() {
-            var goImage = new GameObject();
+            var goImage = new GameObject("ModalImage");
             var button = goImage.AddComponent<Button>();
             button.onClick.AddListener(() => {
                 WindowMgr.instance.CloseTop(null).Forget();
