@@ -15,4 +15,6 @@ public static class UIConfigs {
     public static IFormConfig UIUpgrade = new IFormConfig() {prefabUrl = "Forms/Windows/UIUpgrade", type = FormType.Window};
     
     public static IFormConfig UICompleted = new IFormConfig() {prefabUrl = "Forms/Windows/UICompleted", type = FormType.Window};
+    
+    public static IFormConfig UIToastText = new IFormConfig() {prefabUrl = "Forms/UITips/UIToastText", type = FormType.Toast};
 }

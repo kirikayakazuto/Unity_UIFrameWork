@@ -15,15 +15,16 @@ namespace FrameWork {
         public async UniTask<UIToast> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
             if (!this.pools.TryGetValue(formConfig.prefabUrl, out var pool)) {
                 pool = await this.GenPool(formConfig.prefabUrl);
-                this.pools[formConfig.prefabUrl] = pool;
+                this.pools.Add(formConfig.prefabUrl, pool);
             }
 
             var com = pool.Get();
+            com.fid = formConfig.prefabUrl;
             await UIManager.GetInstance().EnterToToast(com, param);
 
-            var arr = this.showingList[formConfig.prefabUrl];
-            if (arr == null) {
-                arr = this.showingList[formConfig.prefabUrl] = new List<UIToast>();
+            if (!this.showingList.TryGetValue(formConfig.prefabUrl, out var arr)) {
+                arr = new List<UIToast>();
+                this.showingList.Add(formConfig.prefabUrl, arr);
             }
 
             arr.Add(com);
@@ -31,15 +32,15 @@ namespace FrameWork {
             return com;
         }
 
-        public async UniTask<bool> Close(UIToast com, [CanBeNull] Object param) {
+        public async UniTask<bool> Close(UIToast com, [CanBeNull] Object param = null) {
+            if (!this.pools.TryGetValue(com.fid, out var pool)) return false;
+            pool.Release(com);
             await UIManager.GetInstance().ExitToToast(com, param);
-            this.pools[com.fid].Release(com);
             return this.showingList.TryGetValue(com.fid, out var arr) && arr.Remove(com);
         }
 
         public async UniTask<bool> ClearToast(string prefabUrl, [CanBeNull] Object param) {
-            var pool = this.pools[prefabUrl];
-            if (pool == null) return false;
+            if (!this.pools.TryGetValue(prefabUrl, out var pool)) return false;
             if (this.showingList.TryGetValue(prefabUrl, out var arr)) {
                 for (var i = arr.Count - 1; i >= 0; i--) {
                     await UIManager.GetInstance().ExitToToast(arr[i], param);

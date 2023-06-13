@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using FrameWork.Structure;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace FrameWork {
@@ -35,6 +36,10 @@ namespace FrameWork {
 	public class UIToast: UIBase {
 		public override FormType formType { get; set; } = FormType.Toast;
 		public override CloseType closeType { get; set; } = CloseType.Hide;
+		
+		public override async UniTask<bool> CloseSelf([CanBeNull] Object param = null, IFormData tFormData = new IFormData()) {
+			return await ToastMgr.instance.Close(this, param);
+		}
 	}
 	
 	

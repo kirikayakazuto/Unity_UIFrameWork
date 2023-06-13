@@ -66,7 +66,7 @@ namespace FrameWork {
 			
 		}
 
-		public async UniTask<bool> CloseSelf([CanBeNull] Object param, IFormData tFormData = new IFormData()) {
+		public virtual async UniTask<bool> CloseSelf([CanBeNull] Object param = null, IFormData tFormData = new IFormData()) {
 			return await UIManager.GetInstance().CloseForm(new IFormConfig() {prefabUrl = this.fid, type = this.formType}, param, tFormData);
 		}
 		

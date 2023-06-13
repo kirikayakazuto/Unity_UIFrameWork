@@ -128,6 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
   UpgradeButton: {fileID: 5676631090909005377}
+  EncyckoButton: {fileID: 6278623781394375366}
 --- !u!1 &7020932060329375469
 GameObject:
   m_ObjectHideFlags: 0

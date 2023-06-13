@@ -120,7 +120,7 @@ namespace FrameWork {
 		public async UniTask<bool> CloseForm(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
-				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
+				Debug.LogError("UIManager: close form error, prefabUrl: " + prefabUrl);
 				return false;
 			}
 			
