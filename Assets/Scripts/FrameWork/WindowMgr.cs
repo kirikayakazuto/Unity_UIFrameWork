@@ -12,7 +12,7 @@ namespace FrameWork {
 		private readonly Stack<IFormConfig> _showingStack = new Stack<IFormConfig>();
 		private readonly Queue<WindowData> _watingQueue = new Queue<WindowData>();
 		
-		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			
 			formData.onOpenBeforShowEffect = (UIBase com) => {
 				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
@@ -33,7 +33,7 @@ namespace FrameWork {
 			return await UIManager.GetInstance().LoadForm(formConfig);
 		}
 
-		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			if (!this._showingStack.Contains(formConfig)) return false;
 			if (!Utils.RemoveAtStack(this._showingStack, formConfig)) return false;
 			
@@ -48,7 +48,7 @@ namespace FrameWork {
 			return true; 
 		}
 
-		public async UniTask<bool> CloseTop([CanBeNull] Object param, IFormData formData = new IFormData()) {
+		public async UniTask<bool> CloseTop([CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			if (this._showingStack.Count <= 0) return false;
 
 			formData.onCloseBeforHideEffect = () => {

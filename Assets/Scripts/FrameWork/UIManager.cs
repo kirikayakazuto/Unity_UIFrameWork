@@ -90,7 +90,7 @@ namespace FrameWork {
 			return Object.Instantiate(gameObject);
 		}
 
-		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
@@ -117,7 +117,7 @@ namespace FrameWork {
 			return com;
 		}
 
-		public async UniTask<bool> CloseForm(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+		public async UniTask<bool> CloseForm(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
 			var prefabUrl = formConfig.prefabUrl;
 			if (prefabUrl.Length <= 0) {
 				Debug.LogError("UIManager: open form error, prefabUrl: " + prefabUrl);
