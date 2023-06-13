@@ -219,6 +219,7 @@ namespace FrameWork {
 		 * 销毁窗体
 		 */
 		private void DestroyForm(UIBase com) {
+			Object.Destroy(com.gameObject);
 			this.allForms.Remove(com.fid);
 		}
 
