@@ -40,7 +40,7 @@ namespace FrameWork {
 			}
 			var scene = canvas.Find("Scene");
 			if (scene == null) {
-				Debug.Log("UIManager: 没有找到Scene");
+				Debug.LogWarning("UIManager: 没有找到Scene, 请在Canvas节点下创建Scene结点");
 				return self;
 			}
 			self._UIROOT = new GameObject(SysDefine.SYS_UIROOT_NODE).AddComponent<RectTransform>();
