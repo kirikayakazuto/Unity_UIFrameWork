@@ -24,6 +24,7 @@ namespace FrameWork {
 		public readonly Dictionary<string, UIBase> showingForms = new Dictionary<string, UIBase>();
 		private readonly Dictionary<string, ResourceRequest> loadingForms = new Dictionary<string, ResourceRequest>();
 		private readonly Dictionary<string, UIBase> closingForms = new Dictionary<string, UIBase>();
+		private readonly LRUCache _lruCache = new LRUCache();
 
 		private static UIManager instance;
 		public static UIManager GetInstance() {
@@ -114,6 +115,10 @@ namespace FrameWork {
 			formData.onOpenBeforShowEffect?.Invoke(com);
 			await this.EnterToTree(com.fid, param);
 
+			if (com.closeType == CloseType.LRU) {
+				this._lruCache.Remove(com.fid);
+			}
+
 			return com;
 		}
 
@@ -148,6 +153,7 @@ namespace FrameWork {
 				case CloseType.Hide:
 					break;
 				case CloseType.LRU:
+					this.PutLRUCache(com);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -249,6 +255,16 @@ namespace FrameWork {
 			foreach (var keyValuePair in dic) {
 				Debug.Log(keyValuePair.Key + " : " + keyValuePair.Value.fid);
 			}
+		}
+
+		private void PutLRUCache(UIBase com) {
+			this._lruCache.Put(com.fid);
+			if(!this._lruCache.NeedToDeleted()) return;
+			var deleteFid = this._lruCache.DeleteLastNode();
+			if (deleteFid.Length <= 0) return;
+			com = this.GetForm(deleteFid);
+			if(com == null || com.gameObject == null) return;
+			this.DestroyForm(com);
 		}
 	}
 }
