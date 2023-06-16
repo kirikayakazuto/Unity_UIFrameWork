@@ -9,6 +9,7 @@ namespace Test {
         
         public override void OnInit(Object param) {
             FormMgr.Open(UIConfigs.UIBackButton, null).Forget();
+            FormMgr.Open(UIConfigs.UISound).Forget();
         }
 
         private void Start() {

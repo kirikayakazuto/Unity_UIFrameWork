@@ -3,7 +3,6 @@ using Cysharp.Threading.Tasks;
 using FrameWork.Structure;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace FrameWork {
 	public class WindowMgr {

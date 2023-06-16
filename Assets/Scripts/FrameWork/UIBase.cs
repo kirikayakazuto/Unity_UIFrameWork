@@ -1,7 +1,6 @@
 using System;
 using FrameWork.Structure;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -20,6 +19,7 @@ namespace FrameWork {
 		/** 是否已经调用过 pre init 方法 */
 		private bool _inited = false;
 		
+		[NonSerialized]
 		public RectTransform rectTransform;
 
 		public async UniTask<bool> _PreInit([CanBeNull] Object param) {

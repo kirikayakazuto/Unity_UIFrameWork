@@ -6,6 +6,7 @@ namespace Logic {
         private static bool _inited = false;
         
         public static readonly ConfigMgr ConfigMgr = new ConfigMgr();
+        public static readonly SoundMgr SoundMgr = new SoundMgr();
         public static async UniTask<bool> Init() {
             if(Game._inited) return false;
             

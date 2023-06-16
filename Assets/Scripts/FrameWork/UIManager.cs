@@ -243,13 +243,6 @@ namespace FrameWork {
 			}
 			return null;
 		}
-
-		public void LogAllDictionary() {
-			Debug.Log("=====> AllForms");
-			this.LogDictionary(this.allForms);
-			Debug.Log("=====> ShowingForms");
-			this.LogDictionary(this.showingForms);
-		}
 		
 		public void LogDictionary(Dictionary<string , UIBase> dic) {
 			foreach (var keyValuePair in dic) {

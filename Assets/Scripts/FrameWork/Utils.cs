@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using FrameWork.Structure;
 using UnityEngine;
 
 namespace FrameWork {
-	public class Utils {
+	public static class Utils {
 		public static Transform GetTransformByName(Transform root, string name) {
 			var transform = root;
 			return root.Find(name);

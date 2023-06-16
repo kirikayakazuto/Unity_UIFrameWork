@@ -51,17 +51,12 @@ namespace FrameWork {
 				Debug.LogError("SceneMgr: Back error, only one scene");
 				return false;
 			}
-
-			await this.OpenLoading(param, formData);
-		 	
-		    var scene = this.scenes.Pop();
-		    await UIManager.GetInstance().CloseForm(scene, param, formData);
-
-		    this.currScene = this.scenes.Peek();
-		    await UIManager.GetInstance().OpenForm(this.currScene, param, formData);
+			
+		    this.scenes.Pop();
+		    var _currScene = this.scenes.Peek();
+		    await this.Open(_currScene, param, formData);
+		    this.currScene = _currScene;
 		    
-		    await this.CloseLoading(param, formData);
-
 		    return true;
 		}
 

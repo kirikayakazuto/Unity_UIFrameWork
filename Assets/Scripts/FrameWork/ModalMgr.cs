@@ -44,8 +44,7 @@ namespace FrameWork {
             this._image.gameObject.SetActive(true);
             var color = new Color(0, 0, 0, o);
             if (modalType.useEase) {
-                this._image.DOColor(color, 0.2f);
-                await UniTask.Delay(300);
+                await this._image.DOColor(color, 0.2f);
             }
             else this._image.color = color;
             return true;

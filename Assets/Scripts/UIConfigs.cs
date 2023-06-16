@@ -4,6 +4,8 @@ public static class UIConfigs {
 
     public static IFormConfig UIBackButton = new IFormConfig() {prefabUrl = "Forms/Fixeds/UIBackButton", type = FormType.Fixed};
     
+    public static IFormConfig UISound = new IFormConfig() {prefabUrl = "Forms/Fixeds/UISound", type = FormType.Fixed};
+    
     public static IFormConfig UIHome = new IFormConfig() {prefabUrl = "Forms/Screens/UIHome", type = FormType.Screen};
     
     public static IFormConfig UIAbout = new IFormConfig() {prefabUrl = "Forms/Screens/UIAbout", type = FormType.Screen};
