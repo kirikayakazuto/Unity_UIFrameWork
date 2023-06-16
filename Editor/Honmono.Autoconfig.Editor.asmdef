@@ -1,0 +1,10 @@
+{
+    "name": "Honmono.Autoconfig.Editor",
+    "references": [
+      "Undefined.Autoconfig"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Honmono.Autoconfig.Tests",
+    "references": [
+        "Honmono.Autoconfig"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}

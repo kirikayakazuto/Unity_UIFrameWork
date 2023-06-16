@@ -1,0 +1,14 @@
+{
+    "name": "Honmono.Autoconfig.Editor.Tests",
+    "references": [
+        "Honmono.Autoconfig.Editor",
+        "Honmono.Autoconfig"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
