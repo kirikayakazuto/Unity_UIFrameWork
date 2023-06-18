@@ -8,6 +8,7 @@ namespace Test {
 
         public Button UpgradeButton;
         public Button EncyckoButton;
+        public Button LevelButton;
         
         public override void OnInit(Object param) {
             FormMgr.Open(UIConfigs.UIBackButton, null).Forget();
@@ -16,10 +17,13 @@ namespace Test {
 
         void Start() {
             this.UpgradeButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UIUpgrade, null).Forget();
+                FormMgr.Open(UIConfigs.UIUpgrade).Forget();
             });
             this.EncyckoButton.onClick.AddListener(() => {
                 FormMgr.Open(UIConfigs.UIToastText).Forget();
+            });
+            this.LevelButton.onClick.AddListener(() => {
+                FormMgr.Open(UIConfigs.UILevel).Forget();
             });
         }
 
