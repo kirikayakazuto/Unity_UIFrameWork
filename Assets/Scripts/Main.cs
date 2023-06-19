@@ -16,7 +16,7 @@ public class Main : MonoBehaviour {
         FormMgr.Open(UIConfigs.UIHome).Forget();
     }
     
-    void Update() {
+    private void Update() {
         
     }
 }

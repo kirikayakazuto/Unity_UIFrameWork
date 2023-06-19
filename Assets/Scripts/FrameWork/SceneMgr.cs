@@ -53,15 +53,15 @@ namespace FrameWork {
 			}
 			
 		    this.scenes.Pop();
-		    var _currScene = this.scenes.Peek();
+		    var _currScene = this.scenes.Pop();
 		    // 有问题,  会把curr scene再次压栈
 		    await this.Open(_currScene, param, formData);
-		    this.currScene = _currScene;
 		    
 		    return true;
 		}
 
 		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+			if (!Utils.RemoveAtStack(this.scenes, formConfig)) return false;
 			return await UIManager.GetInstance().CloseForm(formConfig, param, formData);
 		}
 
