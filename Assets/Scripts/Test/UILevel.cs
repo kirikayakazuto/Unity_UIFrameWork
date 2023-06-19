@@ -10,6 +10,13 @@ namespace Test {
             FormMgr.Open(UIConfigs.UISkills).Forget();
         }
 
+        public override void OnShow(Object param) {
+            UniTask.Delay(3000).GetAwaiter().OnCompleted(() => {
+                if(null == this) return;
+                FormMgr.Open(UIConfigs.UIPass).Forget();    
+            });
+        }
+
         private void Start() {
         
         }

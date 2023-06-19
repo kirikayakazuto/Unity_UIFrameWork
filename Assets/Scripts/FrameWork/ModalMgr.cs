@@ -11,7 +11,7 @@ namespace FrameWork {
         
         private readonly Image _image;
 
-        public ModalMgr() {
+        private ModalMgr() {
             this._image = this.GenSingleColorImage();
             var ndWindow = UIManager.GetInstance().NdWindow;
             this._image.rectTransform.SetParent(ndWindow);
@@ -51,13 +51,10 @@ namespace FrameWork {
         }
 
         public void CheckModalWindow(IFormConfig[] formConfigs) {
-
             if (formConfigs.Length <= 0) {
                 this._image.gameObject.SetActive(false);
                 return;;
             }
-            
-            var button = this._image.GetComponent<Button>();
             
             for (var i = formConfigs.Length - 1; i >= 0; i--) {
                 var com = UIManager.GetInstance().GetForm(formConfigs[i].prefabUrl) as UIWindow;

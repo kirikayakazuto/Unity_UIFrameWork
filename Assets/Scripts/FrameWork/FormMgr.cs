@@ -35,5 +35,9 @@ namespace FrameWork {
         public static async UniTask<bool> CloseAllWindows() {
             return await WindowMgr.instance.CloseAll();
         }
+
+        public static async UniTask<bool> CloseTopWindow() {
+            return await WindowMgr.instance.CloseTop();
+        }
     }
 }

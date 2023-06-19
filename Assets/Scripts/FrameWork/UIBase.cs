@@ -3,6 +3,7 @@ using FrameWork.Structure;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace FrameWork {
@@ -60,10 +61,19 @@ namespace FrameWork {
 			await UniTask.DelayFrame(1);
 			return false;
 		}
-		
+
 		/** 屏蔽触摸事件 */
-		public void SetBlockInput(bool block) {
+		private Image _blockInputImage; 
+		protected void SetBlockInput(bool block) {
+			if (this._blockInputImage == null) {
+				var image = this._blockInputImage = Utils.GenSingleColorImage("BlockInput");
+				image.rectTransform.SetParent(this.rectTransform);
 			
+				image.color = new Color(0, 0, 0, 0);
+				image.rectTransform.localPosition = new Vector3(0, 0, 0);
+				image.rectTransform.sizeDelta = new Vector2(UnityEngine.Screen.width, UnityEngine.Screen.height);	
+			}
+			this._blockInputImage.gameObject.SetActive(block);
 		}
 
 		public virtual async UniTask<bool> CloseSelf([CanBeNull] Object param = null, IFormData tFormData = new IFormData()) {

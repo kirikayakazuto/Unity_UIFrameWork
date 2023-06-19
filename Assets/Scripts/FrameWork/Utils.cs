@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace FrameWork {
 	public static class Utils {
@@ -22,6 +23,14 @@ namespace FrameWork {
 			}
 
 			return true;
+		}
+		
+		public static Image GenSingleColorImage(string name) {
+			var goImage = new GameObject(name);
+			var button = goImage.AddComponent<Button>();
+			button.onClick.AddListener(() => { });
+			goImage.AddComponent<RectTransform>();
+			return goImage.AddComponent<Image>();
 		}
 	}
 }
