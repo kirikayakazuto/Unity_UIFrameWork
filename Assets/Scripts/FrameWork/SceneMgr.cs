@@ -54,6 +54,7 @@ namespace FrameWork {
 			
 		    this.scenes.Pop();
 		    var _currScene = this.scenes.Peek();
+		    // 有问题,  会把curr scene再次压栈
 		    await this.Open(_currScene, param, formData);
 		    this.currScene = _currScene;
 		    
