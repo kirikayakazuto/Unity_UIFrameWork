@@ -35,13 +35,15 @@ namespace FrameWork {
 			var objects = activeScene.GetRootGameObjects();
 			var canvas = (from t in objects where t.name == "Canvas" select t.GetComponent<RectTransform>()).FirstOrDefault();
 			if (canvas == null) {
-				Debug.Log("UIManager: 没有找到Canvas");
+				Debug.Log("UIManager: 没有找到Canvas, 请确保场景内存在Canvas Game Object");
 				return self;
 			}
 			var scene = canvas.Find("Scene");
 			if (scene == null) {
-				Debug.LogWarning("UIManager: 没有找到Scene, 请在Canvas节点下创建Scene结点");
-				return self;
+				Debug.LogWarning("UIManager: 没有找到Scene, 建议在Canvas节点下创建Scene结点");
+				scene = new GameObject(SysDefine.SYS_SCENE_NODE).AddComponent<RectTransform>();
+				scene.SetParent(canvas);
+				scene.localPosition = Vector3.zero;
 			}
 			self._UIROOT = new GameObject(SysDefine.SYS_UIROOT_NODE).AddComponent<RectTransform>();
 			self._UIROOT.SetParent(scene);
