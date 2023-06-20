@@ -4,17 +4,8 @@
 //
 // -----------------------------------------------------------------------------
 
-namespace Honmono.Autoconfig.Editor
-{
-    /// <summary>
-    /// Provide a general description of the public class.
-    /// </summary>
-    /// <remarks>
-    /// Packages require XmlDoc documentation for ALL Package APIs.
-    /// https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments
-    /// </remarks>
-    public class MyPublicEditorExampleClass
-    {
+namespace Honmono.Autoconfig.Editor {
+    public class MyPublicEditorExampleClass {
         /// <summary>
         /// Provide a description of what this private method does.
         /// </summary>
