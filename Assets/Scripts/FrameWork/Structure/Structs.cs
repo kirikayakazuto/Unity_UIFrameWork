@@ -3,8 +3,14 @@ using UnityEngine;
 
 namespace FrameWork.Structure {
 	public struct IFormConfig {
+		// 窗体名称
+		public string name;
+		// ab包下的路径
 		public string prefabUrl;
+		// 窗体类型
 		public FormType type;
+		// ab包的路径
+		public string assetbundleUrl;
 	}
 
 	public delegate void OnOpen(UIBase com);
