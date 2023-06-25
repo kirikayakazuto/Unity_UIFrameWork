@@ -12,6 +12,5 @@ namespace FrameWork {
 		public const string SYS_WINDOW_NODE = "Window";  
 		public const string SYS_TIPS_NODE = "Tips";
 		public const string SYS_TOAST_NODE = "Toast";
-		public const string SYS_MODAL_NODE = "ModalNode";
 	}
 }

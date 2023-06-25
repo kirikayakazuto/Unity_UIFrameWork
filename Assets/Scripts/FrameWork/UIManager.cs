@@ -81,11 +81,14 @@ namespace FrameWork {
 			if (this.loadingForms.TryGetValue(prefabPath, out var requestLoad)) {
 				return await requestLoad as GameObject;
 			}
-			
-			var asyncLoad = Resources.LoadAsync<GameObject>(prefabPath);
 
-			// var assetBundle = AssetBundle.LoadFromFile("");
-			// await assetBundle.LoadAssetAsync("");
+			ResourceRequest asyncLoad;
+			if (formConfig.assetbundleUrl.Equals("Resources")) {
+				asyncLoad = Resources.LoadAsync<GameObject>(prefabPath);	
+			} else {
+				var ab = AssetBundle.LoadFromFile(SysDefine.AssetBundlePath + formConfig.assetbundleUrl);
+				asyncLoad = ab.LoadAssetAsync(prefabPath);
+			}
 			
 			this.loadingForms[prefabPath] = asyncLoad;
 			var gameObject = await asyncLoad as GameObject;
