@@ -69,20 +69,23 @@ namespace FrameWork {
 
 		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {
 			if (this.allForms.TryGetValue(formConfig.prefabUrl, out var com)) return com;
-			var gameObject = await this._LoadForm(formConfig.prefabUrl);
+			var gameObject = await this._LoadForm(formConfig);
 			if (gameObject == null) return null;
 			com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
 			this.allForms[formConfig.prefabUrl] = com;
 			return com;
 		}
 
-		private async UniTask<GameObject> _LoadForm(string prefabPath) {
-			
+		private async UniTask<GameObject> _LoadForm(IFormConfig formConfig) {
+			var prefabPath = formConfig.prefabUrl;
 			if (this.loadingForms.TryGetValue(prefabPath, out var requestLoad)) {
 				return await requestLoad as GameObject;
 			}
 			
 			var asyncLoad = Resources.LoadAsync<GameObject>(prefabPath);
+
+			// var assetBundle = AssetBundle.LoadFromFile("");
+			// await assetBundle.LoadAssetAsync("");
 			
 			this.loadingForms[prefabPath] = asyncLoad;
 			var gameObject = await asyncLoad as GameObject;

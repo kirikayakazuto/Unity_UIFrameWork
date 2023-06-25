@@ -4,6 +4,7 @@
 //
 // -----------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -23,17 +24,7 @@ namespace Honmono.Autoconfig.Editor {
         // 生成auto config文件
         [MenuItem("Tools/AutoConfig")]
         public static void GenAutoConfig() {
-            // 1. 创建UIConfigs文件
-            Debug.Log(Application.dataPath);
-            // 
-            
-            // 1 获取所有ab包
-            var abNames = AssetDatabase.GetAllAssetBundleNames();
-            foreach (var abName in abNames) {
-                Debug.Log(abName);
-            }
-
-            var formConfig = new Dictionary<string, IFormConfig>();
+            var formConfigs = new Dictionary<string, IFormConfig>();
 
             var paths = AutoConfig.GetAllPrefabRelativePath();
             
@@ -44,8 +35,26 @@ namespace Honmono.Autoconfig.Editor {
             var toastBlock = new Regex(": UIToast");
             
             foreach (var path in paths) {
-                Debug.Log(path);
+                // asset name
+                var assetName = Path.GetFileNameWithoutExtension(path);
+                
+                // asset bundle name
                 var prefabText = File.ReadAllText(path);
+                var assetBundleName = AssetDatabase.GetImplicitAssetBundleName(path) + "." + AssetDatabase.GetImplicitAssetBundleVariantName(path);
+                if (assetBundleName.Equals(".")) assetBundleName = "Resources";
+
+                var assetPath = "";
+                if (assetBundleName.Equals("Resources")) {
+                    var match = Regex.Match(path, "Assets/Resources/(?<PathVale>.*?).prefab");
+                    if (match.Success) assetPath = match.Groups["PathVale"].Value;    
+                } else {
+                    var assets = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(assetBundleName, assetName);
+                    foreach (var asset in assets) {
+                        if (asset.Contains(assetName)) {
+                            assetPath = assetName;
+                        }
+                    }
+                }
                 
                 var guidMatch = Regex.Matches(prefabText, "m_Script: {fileID: (.*), guid: (?<GuidValue>.*?), type: [0-9]}");
                 foreach (Match o in guidMatch) {
@@ -55,36 +64,44 @@ namespace Honmono.Autoconfig.Editor {
 
                     var scriptText = File.ReadAllText(scriptPath);
                     var formName = Path.GetFileNameWithoutExtension(scriptPath);
-                    // path.Split("/")
+                    
                     if (screenBlock.Match(scriptText).Success) {
-                        formConfig.Add(formName, new IFormConfig(){name = formName, prefabUrl = path, type = "Screen", assetbundle = "resource"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Screen"});
                     }else if (fixedBlock.Match(scriptText).Success) {
-                        formConfig.Add(formName, new IFormConfig(){name = formName, prefabUrl = path, type = "Fixed", assetbundle = "resource"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Fixed"});
                     }else if (windowBlock.Match(scriptText).Success) {
-                        formConfig.Add(formName, new IFormConfig(){name = formName, prefabUrl = path, type = "Window", assetbundle = "resource"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Window"});
                     }else if (tipsBlock.Match(scriptText).Success) {
-                        formConfig.Add(formName, new IFormConfig(){name = formName, prefabUrl = path, type = "Tips", assetbundle = "resource"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Tips"});
                     }else if (toastBlock.Match(scriptText).Success) {
-                        formConfig.Add(formName, new IFormConfig(){name = formName, prefabUrl = path, type = "Toast", assetbundle = "resource"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Toast"});
                     }
                 }
             }
 
             var configScript = @"using FrameWork.Structure;
-public static class UIConfigs {";
-            foreach (var keyValuePair in formConfig) {
-                configScript += $"\t\n\t\npublic static IFormConfig {keyValuePair.Key} = new IFormConfig() {{prefabUrl = \"{keyValuePair.Value.prefabUrl}\", type = FormType.{keyValuePair.Value.type}}};";
+public static class UIConfigs {
+";
+            foreach (var keyValuePair in formConfigs) {
+                configScript += $"\t\n    public static IFormConfig {keyValuePair.Key} = new IFormConfig() {{ " +
+                                $"\t\n        name = \"{keyValuePair.Value.name}\", " +
+                                $"\t\n        prefabUrl = \"{keyValuePair.Value.prefabUrl}\", " +
+                                $"\t\n        type = FormType.{keyValuePair.Value.type}, " +
+                                $"\t\n        assetbundleUrl = \"{keyValuePair.Value.assetbundle}\" " +
+                                $"\t\n    }};\t\n";
             }
             configScript += "\t\n}";
             
             File.WriteAllText(Application.dataPath + "/Scripts/UIConfigs.cs", configScript);
             AssetDatabase.Refresh();
+            
+            Debug.Log("AutoConfig run success");
         }
  
         
         private static List<string> GetAllPrefabRelativePath() {
             var list = new List<string>();
-            var guids = AssetDatabase.FindAssets("t:Prefab");
+            var guids = AssetDatabase.FindAssets("t:Prefab", new string[] { "Assets" });
             foreach (var guid in guids) {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 list.Add(path);

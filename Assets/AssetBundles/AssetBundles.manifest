@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 2527580360
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: abtest3.assetbundle
+      Dependencies: {}

@@ -1,7 +1,8 @@
 using FrameWork.Structure;
 
 namespace FrameWork {
-	public class SysDefine {
+	public static class SysDefine {
+		public static string AssetBundlePath = "Assets/AssetBundles";
 		public static IFormConfig defaultLoadingForm = UIConfigs.UILoading;
 		/* 节点常量 */
 		public const string SYS_SCENE_NODE = "Scene";
