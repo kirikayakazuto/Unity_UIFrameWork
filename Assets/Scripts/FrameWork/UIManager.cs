@@ -126,6 +126,8 @@ namespace FrameWork {
 			if (com.closeType == CloseType.LRU) {
 				this._lruCache.Remove(com.fid);
 			}
+			
+			BroadcastUtils.FormOpenEvent.Emit(new FormData() {fid = com.fid});
 
 			return com;
 		}
@@ -166,6 +168,8 @@ namespace FrameWork {
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+			
+			BroadcastUtils.FormCloseEvent.Emit(new FormData() {fid = com.fid});
 			
 			return this.closingForms.Remove(prefabUrl);
 		}

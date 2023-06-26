@@ -2,12 +2,26 @@ using UnityEngine;
 
 namespace FrameWork {
 	
+	/**
+	 * 框架内部提供的事件
+	 */
+	public struct FormData {
+		public string fid;
+	}
+	
 	public struct TestData {
 		public string testName;
 	}
 	
 	
 	public static class BroadcastUtils {
+		
+		// 窗体关闭事件
+		public static readonly Broadcast<FormData> FormCloseEvent = new Broadcast<FormData>();
+		
+		// 窗体开启事件
+		public static readonly Broadcast<FormData> FormOpenEvent = new Broadcast<FormData>();
+		
 		public static readonly Broadcast<TestData> broadcast = new Broadcast<TestData>();
 	}
 
