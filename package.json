@@ -1,5 +1,5 @@
 {
-	"name": "auto-config",
+	"name": "com.honmono.autoconfig",
 	"displayName":"AutoConfig",
 	"version": "0.1.0",
 	"unity": "2022.3",
