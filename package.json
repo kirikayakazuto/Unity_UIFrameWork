@@ -1,5 +1,5 @@
 {
-	"name": "com.honmono.autoconfig",
+	"name": "AutoConfig",
 	"displayName":"AutoConfig",
 	"version": "0.1.0",
 	"unity": "2022.3",
@@ -7,6 +7,7 @@
 	"dependencies": {
 	},
 	"author": {
-		"name": "honmono"
+		"name": "honmono",
+		"email": "1099263878@qq.com"
 	}
 }
