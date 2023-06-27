@@ -20,6 +20,8 @@ namespace Honmono.Autoconfig.Editor {
         public string assetbundle;
     }
     public static class AutoConfig {
+
+        private const string UIConfigPath = "/Scripts/FrameWork/UIConfigs.cs";
         
         // 生成auto config文件
         [MenuItem("Tools/AutoConfig")]
@@ -92,7 +94,7 @@ public static class UIConfigs {
             }
             configScript += "\t\n}";
             
-            File.WriteAllText(Application.dataPath + "/Scripts/UIConfigs.cs", configScript);
+            File.WriteAllText(Application.dataPath + UIConfigPath, configScript);
             AssetDatabase.Refresh();
             
             Debug.Log("AutoConfig run success");
