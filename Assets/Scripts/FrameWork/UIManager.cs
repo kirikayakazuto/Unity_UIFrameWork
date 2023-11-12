@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using FrameWork.Structure;
-using Logic;
 
 namespace FrameWork {
 	public class UIManager {
