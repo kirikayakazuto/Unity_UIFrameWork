@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using FrameWork.Structure;
+using Logic;
 
 namespace FrameWork {
 	public class UIManager {
@@ -22,7 +23,7 @@ namespace FrameWork {
 		private delegate UniTask<UIBase> OnLoadUIBase();
 		private readonly Dictionary<string, UIBase> allForms = new Dictionary<string, UIBase>();
 		public readonly Dictionary<string, UIBase> showingForms = new Dictionary<string, UIBase>();
-		private readonly Dictionary<string, ResourceRequest> loadingForms = new Dictionary<string, ResourceRequest>();
+		private readonly Dictionary<string, UniTask<UIBase>> loadingForms = new Dictionary<string, UniTask<UIBase>>();
 		private readonly Dictionary<string, UIBase> closingForms = new Dictionary<string, UIBase>();
 		private readonly LRUCache _lruCache = new LRUCache();
 
@@ -69,34 +70,38 @@ namespace FrameWork {
 
 		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {
 			if (this.allForms.TryGetValue(formConfig.prefabUrl, out var com)) return com;
-			var gameObject = await this._LoadForm(formConfig);
-			if (gameObject == null) return null;
-			com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
-			this.allForms[formConfig.prefabUrl] = com;
+			if (this.loadingForms.TryGetValue(formConfig.prefabUrl, out var asyncLoad)) return await asyncLoad;
+			
+			asyncLoad = this._LoadForm(formConfig);
+
+			this.loadingForms[formConfig.prefabUrl] = asyncLoad;
+
+			com = await asyncLoad;
+			this.loadingForms.Remove(formConfig.prefabUrl);
+			
 			return com;
 		}
 
-		private async UniTask<GameObject> _LoadForm(IFormConfig formConfig) {
+		private async UniTask<UIBase> _LoadForm(IFormConfig formConfig) {
 			var prefabPath = formConfig.prefabUrl;
-			if (this.loadingForms.TryGetValue(prefabPath, out var requestLoad)) {
-				return await requestLoad as GameObject;
-			}
 
-			ResourceRequest asyncLoad;
+			GameObject prefab;
 			if (formConfig.assetbundleUrl.Equals("Resources")) {
-				asyncLoad = Resources.LoadAsync<GameObject>(prefabPath);	
+				prefab = (GameObject) await Resources.LoadAsync<GameObject>(prefabPath);	
 			} else {
 				var ab = AssetBundle.LoadFromFile(SysDefine.AssetBundlePath + formConfig.assetbundleUrl);
-				asyncLoad = ab.LoadAssetAsync(prefabPath);
+				prefab = (GameObject)await ab.LoadAssetAsync(prefabPath);
 			}
 			
-			this.loadingForms[prefabPath] = asyncLoad;
-			var gameObject = await asyncLoad as GameObject;
-			if (!this.loadingForms.Remove(prefabPath)) return null;
-
-			if (gameObject == null) return null;
+			if (prefab == null) return null;
+			
+			var gameObject = Object.Instantiate(prefab);
 			gameObject.SetActive(false);
-			return Object.Instantiate(gameObject);
+
+			var com = this.AddTransformTree(gameObject.GetComponent<RectTransform>());
+			this.allForms[formConfig.prefabUrl] = com;
+
+			return com;
 		}
 
 		public async UniTask<UIBase> OpenForm(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
