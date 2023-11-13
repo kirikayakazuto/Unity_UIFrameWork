@@ -21,7 +21,7 @@ namespace Honmono.Autoconfig.Editor {
     }
     public static class AutoConfig {
 
-        private const string UIConfigPath = "/Scripts/FrameWork/UIConfigs.cs";
+        private const string UIConfigPath = "/Scripts/Logic/Managers/FrameWork/UIConfigs.cs";
         
         // 生成auto config文件
         [MenuItem("Tools/AutoConfig")]

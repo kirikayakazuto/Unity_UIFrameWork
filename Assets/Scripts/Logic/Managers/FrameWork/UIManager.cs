@@ -37,6 +37,7 @@ namespace FrameWork {
 			if (scene == null) {
 				Debug.LogWarning("UIManager: 没有找到Scene, 建议在Canvas节点下创建Scene结点");
 				scene = new GameObject(SysDefine.SYS_SCENE_NODE).AddComponent<RectTransform>();
+				scene.gameObject.AddComponent<Scene>();
 				scene.SetParent(canvas);
 				scene.localPosition = Vector3.zero;
 			}
