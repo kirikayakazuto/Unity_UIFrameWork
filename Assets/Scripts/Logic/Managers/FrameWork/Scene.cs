@@ -1,17 +1,18 @@
+using System;
 using Logic;
 using UnityEngine;
 
 namespace FrameWork {
     public class Scene : MonoBehaviour {
-    
+
+        private async void OnEnable() {
+            await Game.Init(); 
+        }
+
         void Start() {
         
         }
-
-        public async void OnGameInit() {
-            await Game.Init();
-        }
-
+        
         void Update() {
             Game.Update();
         }

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using FrameWork;
+using Logic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
 
     private void OnEnable() {
-        
+
     }
     
     private void Start() {

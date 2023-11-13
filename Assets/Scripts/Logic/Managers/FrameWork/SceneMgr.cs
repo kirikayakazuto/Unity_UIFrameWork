@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using FrameWork.Structure;
+using Logic;
 using UnityEngine;
 
 namespace FrameWork {
@@ -12,7 +13,7 @@ namespace FrameWork {
 		private readonly Stack<IFormConfig> scenes = new Stack<IFormConfig>();
 
 		public UIBase GetCurrScene() {
-			return UIManager.GetInstance().GetForm(this.currScene.prefabUrl);
+			return Game.UIMgr.GetForm(this.currScene.prefabUrl);
 		}
 
 		public async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
@@ -25,7 +26,7 @@ namespace FrameWork {
 			await this.OpenLoading(param, formData);
 			
 			// 关闭其他显示中的UI
-			var showingForms = UIManager.GetInstance().showingForms;
+			var showingForms = Game.UIMgr.GetShowingForms();
 			if (showingForms.Count > 0) {
 				var uniTasks = new UniTask<bool>[showingForms.Count];
 				var idx = 0;
@@ -38,7 +39,7 @@ namespace FrameWork {
 			}
 			
 			this.currScene = formConfig;
-			var com = await UIManager.GetInstance().OpenForm(formConfig, param, formData);
+			var com = await Game.UIMgr.OpenForm(formConfig, param, formData);
 			this.scenes.Push(formConfig);
 			
 			await this.CloseLoading(param, formData);
@@ -52,9 +53,10 @@ namespace FrameWork {
 				return false;
 			}
 			
+			// todo...
+			// 用一个更优雅的方式, 避免需要pop两次
 		    this.scenes.Pop();
 		    var _currScene = this.scenes.Pop();
-		    // 有问题,  会把curr scene再次压栈
 		    await this.Open(_currScene, param, formData);
 		    
 		    return true;
@@ -62,7 +64,7 @@ namespace FrameWork {
 
 		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
 			if (!Utils.RemoveAtStack(this.scenes, formConfig)) return false;
-			return await UIManager.GetInstance().CloseForm(formConfig, param, formData);
+			return await Game.UIMgr.CloseForm(formConfig, param, formData);
 		}
 
 		private async UniTask<UIBase> OpenLoading([CanBeNull] Object param, IFormData formData = new IFormData()) {

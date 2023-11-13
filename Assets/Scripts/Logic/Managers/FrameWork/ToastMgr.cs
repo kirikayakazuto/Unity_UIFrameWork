@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FrameWork.Structure;
 using JetBrains.Annotations;
+using Logic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -20,7 +21,7 @@ namespace FrameWork {
 
             var com = pool.Get();
             com.fid = formConfig.prefabUrl;
-            await UIManager.GetInstance().EnterToToast(com, param);
+            await Game.UIMgr.EnterToToast(com, param);
 
             if (!this.showingList.TryGetValue(formConfig.prefabUrl, out var arr)) {
                 arr = new List<UIToast>();
@@ -35,7 +36,7 @@ namespace FrameWork {
         public async UniTask<bool> Close(UIToast com, [CanBeNull] Object param = null) {
             if (!this.pools.TryGetValue(com.fid, out var pool)) return false;
             pool.Release(com);
-            await UIManager.GetInstance().ExitToToast(com, param);
+            await Game.UIMgr.ExitToToast(com, param);
             return this.showingList.TryGetValue(com.fid, out var arr) && arr.Remove(com);
         }
 
@@ -43,7 +44,7 @@ namespace FrameWork {
             if (!this.pools.TryGetValue(prefabUrl, out var pool)) return false;
             if (this.showingList.TryGetValue(prefabUrl, out var arr)) {
                 for (var i = arr.Count - 1; i >= 0; i--) {
-                    await UIManager.GetInstance().ExitToToast(arr[i], param);
+                    await Game.UIMgr.ExitToToast(arr[i], param);
                     pool.Release(arr[i]);
                 }
                 arr.Clear();
@@ -60,7 +61,7 @@ namespace FrameWork {
             if (prefab == null) return null;
             return new ObjectPool<UIToast>(() => {
                 var gameObject = Object.Instantiate(prefab);
-                UIManager.GetInstance().AddTransformTree(gameObject.GetComponent<RectTransform>());
+                Game.UIMgr.AddTransformTree(gameObject.GetComponent<RectTransform>());
                 return gameObject.GetComponent<UIToast>();
             });
         }

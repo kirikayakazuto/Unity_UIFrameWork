@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FrameWork.Structure;
 using JetBrains.Annotations;
+using Logic;
 using UnityEngine;
 
 namespace FrameWork {
@@ -20,7 +21,7 @@ namespace FrameWork {
 			var showWait = formData.showWait;
 			if (this._showingStack.Count <= 0 || (!showWait || this._watingQueue.Count <= 0)) {
 				this._showingStack.Push(formConfig);
-				var com= await UIManager.GetInstance().OpenForm(formConfig, param, formData);
+				var com= await Game.UIMgr.OpenForm(formConfig, param, formData);
 				com.rectTransform.SetSiblingIndex(this._showingStack.Count);
 				
 				return com;
@@ -29,7 +30,7 @@ namespace FrameWork {
 			var windowData = new WindowData() { formConfig = formConfig, param = param, formData = formData};
 			
 			this._watingQueue.Enqueue(windowData);
-			return await UIManager.GetInstance().LoadForm(formConfig);
+			return await Game.UIMgr.LoadForm(formConfig);
 		}
 
 		public async UniTask<bool> Close(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
@@ -40,7 +41,7 @@ namespace FrameWork {
 				ModalMgr.instance.CheckModalWindow(this._showingStack.ToArray());
 			};
 			
-			await UIManager.GetInstance().CloseForm(formConfig, param, formData);
+			await Game.UIMgr.CloseForm(formConfig, param, formData);
 			if (this._watingQueue.TryDequeue(out var windowData)) {
 				await this.Open(windowData.formConfig, windowData.param, windowData.formData);
 			}
@@ -55,7 +56,7 @@ namespace FrameWork {
 			};
 			
 			var formConfig = this._showingStack.Pop();
-			await UIManager.GetInstance().CloseForm(formConfig, param, formData);
+			await Game.UIMgr.CloseForm(formConfig, param, formData);
 			
 			if (this._watingQueue.TryDequeue(out var windowData)) {
 				await this.Open(windowData.formConfig, windowData.param, windowData.formData);
@@ -67,7 +68,7 @@ namespace FrameWork {
 		public async UniTask<bool> CloseAll() {
 			while (this._showingStack.Count > 0) {
 				var formConfig = this._showingStack.Pop();
-				await UIManager.GetInstance().CloseForm(formConfig, null);
+				await Game.UIMgr.CloseForm(formConfig, null);
 			}
 			return true;
 		}

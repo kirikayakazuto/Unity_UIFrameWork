@@ -6,7 +6,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace FrameWork {
-    public class FormMgr {
+    public static class FormMgr {
         public static async UniTask<UIBase> Open(IFormConfig formConfig, [CanBeNull] Object param = null, IFormData formData = new IFormData()) {
             return formConfig.type switch {
                 FormType.Screen => await SceneMgr.instance.Open(formConfig, param, formData),

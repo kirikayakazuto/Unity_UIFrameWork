@@ -2,6 +2,7 @@ using System;
 using FrameWork.Structure;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using Logic;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -77,7 +78,7 @@ namespace FrameWork {
 		}
 
 		public virtual async UniTask<bool> CloseSelf([CanBeNull] Object param = null, IFormData tFormData = new IFormData()) {
-			return await UIManager.GetInstance().CloseForm(new IFormConfig() {prefabUrl = this.fid, type = this.formType}, param, tFormData);
+			return await Game.UIMgr.CloseForm(new IFormConfig() {prefabUrl = this.fid, type = this.formType}, param, tFormData);
 		}
 		
 		protected bool Equals(UIBase other) {

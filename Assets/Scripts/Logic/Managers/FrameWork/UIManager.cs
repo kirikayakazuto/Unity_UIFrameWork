@@ -10,33 +10,28 @@ using FrameWork.Structure;
 
 namespace FrameWork {
 	public class UIManager {
-		private RectTransform _UIROOT;
-		private RectTransform _NdScreen;
-		private RectTransform _NdFixed;
-		private RectTransform _NdWindow;
-		private RectTransform _NdToast;
-		private RectTransform _NdTips;
+		private readonly RectTransform _UIROOT;
+		private readonly RectTransform _NdScreen;
+		private readonly RectTransform _NdFixed;
+		private readonly RectTransform _NdWindow;
+		private readonly RectTransform _NdToast;
+		private readonly RectTransform _NdTips;
 
 		public RectTransform NdWindow => this._NdWindow;
-
-		private delegate UniTask<UIBase> OnLoadUIBase();
+		
 		private readonly Dictionary<string, UIBase> allForms = new Dictionary<string, UIBase>();
-		public readonly Dictionary<string, UIBase> showingForms = new Dictionary<string, UIBase>();
+		private readonly Dictionary<string, UIBase> showingForms = new Dictionary<string, UIBase>();
 		private readonly Dictionary<string, UniTask<UIBase>> loadingForms = new Dictionary<string, UniTask<UIBase>>();
 		private readonly Dictionary<string, UIBase> closingForms = new Dictionary<string, UIBase>();
 		private readonly LRUCache _lruCache = new LRUCache();
-
-		private static UIManager instance;
-		public static UIManager GetInstance() {
-			if (UIManager.instance != null) return UIManager.instance;
-			
-			var self = UIManager.instance = new UIManager();
+		
+		public UIManager() {
 			var activeScene = SceneManager.GetActiveScene();
 			var objects = activeScene.GetRootGameObjects();
 			var canvas = (from t in objects where t.name == "Canvas" select t.GetComponent<RectTransform>()).FirstOrDefault();
 			if (canvas == null) {
 				Debug.Log("UIManager: 没有找到Canvas, 请确保场景内存在Canvas Game Object");
-				return self;
+				return;
 			}
 			var scene = canvas.Find("Scene");
 			if (scene == null) {
@@ -45,26 +40,28 @@ namespace FrameWork {
 				scene.SetParent(canvas);
 				scene.localPosition = Vector3.zero;
 			}
-			self._UIROOT = new GameObject(SysDefine.SYS_UIROOT_NODE).AddComponent<RectTransform>();
-			self._UIROOT.SetParent(scene);
-			self._UIROOT.localPosition = Vector3.zero;
-			self._NdScreen = new GameObject(SysDefine.SYS_SCREEN_NODE).AddComponent<RectTransform>();
-			self._NdScreen.SetParent(self._UIROOT);
-			self._NdScreen.localPosition = Vector3.zero;
-			self._NdFixed = new GameObject(SysDefine.SYS_FIXED_NODE).AddComponent<RectTransform>();
-			self._NdFixed.SetParent(self._UIROOT);
-			self._NdFixed.localPosition = Vector3.zero;
-			self._NdWindow = new GameObject(SysDefine.SYS_WINDOW_NODE).AddComponent<RectTransform>();
-			self._NdWindow.SetParent(self._UIROOT);
-			self._NdWindow.localPosition = Vector3.zero;
-			self._NdToast = new GameObject(SysDefine.SYS_TOAST_NODE).AddComponent<RectTransform>();
-			self._NdToast.SetParent(self._UIROOT);
-			self._NdToast.localPosition = Vector3.zero;
-			self._NdTips = new GameObject(SysDefine.SYS_TIPS_NODE).AddComponent<RectTransform>();
-			self._NdTips.SetParent(self._UIROOT);
-			self._NdTips.localPosition = Vector3.zero;
-			
-			return UIManager.instance;
+			this._UIROOT = new GameObject(SysDefine.SYS_UIROOT_NODE).AddComponent<RectTransform>();
+			this._UIROOT.SetParent(scene);
+			this._UIROOT.localPosition = Vector3.zero;
+			this._NdScreen = new GameObject(SysDefine.SYS_SCREEN_NODE).AddComponent<RectTransform>();
+			this._NdScreen.SetParent(this._UIROOT);
+			this._NdScreen.localPosition = Vector3.zero;
+			this._NdFixed = new GameObject(SysDefine.SYS_FIXED_NODE).AddComponent<RectTransform>();
+			this._NdFixed.SetParent(this._UIROOT);
+			this._NdFixed.localPosition = Vector3.zero;
+			this._NdWindow = new GameObject(SysDefine.SYS_WINDOW_NODE).AddComponent<RectTransform>();
+			this._NdWindow.SetParent(this._UIROOT);
+			this._NdWindow.localPosition = Vector3.zero;
+			this._NdToast = new GameObject(SysDefine.SYS_TOAST_NODE).AddComponent<RectTransform>();
+			this._NdToast.SetParent(this._UIROOT);
+			this._NdToast.localPosition = Vector3.zero;
+			this._NdTips = new GameObject(SysDefine.SYS_TIPS_NODE).AddComponent<RectTransform>();
+			this._NdTips.SetParent(this._UIROOT);
+			this._NdTips.localPosition = Vector3.zero;
+		}
+
+		public Dictionary<string, UIBase> GetShowingForms() {
+			return this.showingForms;
 		}
 
 		public async UniTask<UIBase> LoadForm(IFormConfig formConfig) {

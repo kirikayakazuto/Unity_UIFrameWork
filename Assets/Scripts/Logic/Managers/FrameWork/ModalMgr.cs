@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using FrameWork.Structure;
+using Logic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ namespace FrameWork {
 
         private ModalMgr() {
             this._image = this.GenSingleColorImage();
-            var ndWindow = UIManager.GetInstance().NdWindow;
+            var ndWindow = Game.UIMgr.NdWindow;
             this._image.rectTransform.SetParent(ndWindow);
             this._image.color = new Color(0, 0, 0, 0);
             this._image.rectTransform.localPosition = new Vector3(0, 0, 0);
@@ -57,7 +58,7 @@ namespace FrameWork {
             }
             
             for (var i = formConfigs.Length - 1; i >= 0; i--) {
-                var com = UIManager.GetInstance().GetForm(formConfigs[i].prefabUrl) as UIWindow;
+                var com = Game.UIMgr.GetForm(formConfigs[i].prefabUrl) as UIWindow;
                 if(com == null) continue;
                 if (com.modalType.opacity <= 0) continue;
                 this._image.rectTransform.SetSiblingIndex(i);
