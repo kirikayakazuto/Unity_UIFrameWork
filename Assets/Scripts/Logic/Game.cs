@@ -12,10 +12,11 @@ namespace Logic {
         public static async UniTask<bool> Init() {
             if(Game._inited) return false;
             
-            // new mgr
+            // new mgr 
             Game.UIMgr = new UIManager();
             Game.SoundMgr = new SoundMgr();
             Game.ConfigMgr = new ConfigMgr();
+            // Game.ConfigMgr
             
             // load configs
             await Game.ConfigMgr.LoadConfigs();

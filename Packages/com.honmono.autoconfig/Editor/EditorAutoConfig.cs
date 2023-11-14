@@ -45,18 +45,18 @@ namespace Honmono.Autoconfig.Editor {
                 var assetBundleName = AssetDatabase.GetImplicitAssetBundleName(path) + "." + AssetDatabase.GetImplicitAssetBundleVariantName(path);
                 if (assetBundleName.Equals(".")) assetBundleName = "Resources";
 
-                var assetPath = "";
-                if (assetBundleName.Equals("Resources")) {
-                    var match = Regex.Match(path, "Assets/Resources/(?<PathVale>.*?).prefab");
-                    if (match.Success) assetPath = match.Groups["PathVale"].Value;    
-                } else {
-                    var assets = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(assetBundleName, assetName);
-                    foreach (var asset in assets) {
-                        if (asset.Contains(assetName)) {
-                            assetPath = assetName;
-                        }
-                    }
-                }
+                var assetPath = path;
+                // if (assetBundleName.Equals("Resources")) {
+                //     var match = Regex.Match(path, "Assets/Resources/(?<PathVale>.*?).prefab");
+                //     if (match.Success) assetPath = match.Groups["PathVale"].Value;    
+                // } else {
+                //     var assets = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(assetBundleName, assetName);
+                //     foreach (var asset in assets) {
+                //         if (asset.Contains(assetName)) {
+                //             assetPath = assetName;
+                //         }
+                //     }
+                // }
                 
                 var guidMatch = Regex.Matches(prefabText, "m_Script: {fileID: (.*), guid: (?<GuidValue>.*?), type: [0-9]}");
                 foreach (Match o in guidMatch) {
@@ -68,15 +68,15 @@ namespace Honmono.Autoconfig.Editor {
                     var formName = Path.GetFileNameWithoutExtension(scriptPath);
                     
                     if (screenBlock.Match(scriptText).Success) {
-                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Screen"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Screen"});
                     }else if (fixedBlock.Match(scriptText).Success) {
-                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Fixed"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Fixed"});
                     }else if (windowBlock.Match(scriptText).Success) {
-                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Window"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Window"});
                     }else if (tipsBlock.Match(scriptText).Success) {
-                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Tips"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Tips"});
                     }else if (toastBlock.Match(scriptText).Success) {
-                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, assetbundle = assetBundleName, type = "Toast"});
+                        formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Toast"});
                     }
                 }
             }
@@ -89,7 +89,6 @@ public static class UIConfigs {
                                 $"\t\n        name = \"{keyValuePair.Value.name}\", " +
                                 $"\t\n        prefabUrl = \"{keyValuePair.Value.prefabUrl}\", " +
                                 $"\t\n        type = FormType.{keyValuePair.Value.type}, " +
-                                $"\t\n        assetbundleUrl = \"{keyValuePair.Value.assetbundle}\" " +
                                 $"\t\n    }};\t\n";
             }
             configScript += "\t\n}";

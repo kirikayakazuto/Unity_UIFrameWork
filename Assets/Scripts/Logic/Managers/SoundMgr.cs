@@ -3,7 +3,7 @@ namespace Logic.Managers {
         public bool effectState = true;
         public bool musicState = true;
 
-        public void SwitchEffect() {
+        public void SwitchEffect() { 
             this.effectState = !this.effectState;
         }
 

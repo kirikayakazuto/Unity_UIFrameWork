@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using FrameWork.Structure;
+using UnityEngine.AddressableAssets;
 
 namespace FrameWork {
 	public class UIManager {
@@ -82,14 +83,8 @@ namespace FrameWork {
 		private async UniTask<UIBase> _LoadForm(IFormConfig formConfig) {
 			var prefabPath = formConfig.prefabUrl;
 
-			GameObject prefab;
-			if (formConfig.assetbundleUrl.Equals("Resources")) {
-				prefab = (GameObject) await Resources.LoadAsync<GameObject>(prefabPath);	
-			} else {
-				var ab = AssetBundle.LoadFromFile(SysDefine.AssetBundlePath + formConfig.assetbundleUrl);
-				prefab = (GameObject)await ab.LoadAssetAsync(prefabPath);
-			}
-			
+			var prefab = await Addressables.LoadAssetAsync<GameObject>(prefabPath);
+
 			if (prefab == null) return null;
 			
 			var gameObject = Object.Instantiate(prefab);
