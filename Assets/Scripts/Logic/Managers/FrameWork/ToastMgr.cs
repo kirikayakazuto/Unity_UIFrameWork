@@ -4,6 +4,7 @@ using FrameWork.Structure;
 using JetBrains.Annotations;
 using Logic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Pool;
 
 namespace FrameWork {
@@ -14,13 +15,17 @@ namespace FrameWork {
         private readonly Dictionary<string, List<UIToast>> showingList = new Dictionary<string, List<UIToast>>();
 
         public async UniTask<UIToast> Open(IFormConfig formConfig, [CanBeNull] Object param, IFormData formData = new IFormData()) {
+            
+            Debug.Log(formConfig.prefabUrl);
+            
             if (!this.pools.TryGetValue(formConfig.prefabUrl, out var pool)) {
                 pool = await this.GenPool(formConfig.prefabUrl);
                 this.pools.Add(formConfig.prefabUrl, pool);
             }
-
+            
             var com = pool.Get();
             com.fid = formConfig.prefabUrl;
+            
             await Game.UIMgr.EnterToToast(com, param);
 
             if (!this.showingList.TryGetValue(formConfig.prefabUrl, out var arr)) {
@@ -57,7 +62,7 @@ namespace FrameWork {
         }
 
         private async UniTask<ObjectPool<UIToast>> GenPool(string prefabUrl) {
-            var prefab = await Resources.LoadAsync(prefabUrl) as GameObject;
+            var prefab = await Addressables.LoadAssetAsync<GameObject>(prefabUrl);
             if (prefab == null) return null;
             return new ObjectPool<UIToast>(() => {
                 var gameObject = Object.Instantiate(prefab);
