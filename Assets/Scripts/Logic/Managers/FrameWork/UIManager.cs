@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using FrameWork.Structure;
 using UnityEngine.AddressableAssets;
+using Scene = Renderer.Scene;
 
 namespace FrameWork {
 	public class UIManager {

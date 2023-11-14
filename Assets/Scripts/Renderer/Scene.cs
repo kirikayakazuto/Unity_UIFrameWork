@@ -1,8 +1,7 @@
-using System;
 using Logic;
 using UnityEngine;
 
-namespace FrameWork {
+namespace Renderer {
     public class Scene : MonoBehaviour {
 
         private async void OnEnable() {
