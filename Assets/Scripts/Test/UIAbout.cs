@@ -8,8 +8,8 @@ namespace Test {
     public class UIAbout : UIScreen {
         
         public override void OnInit(Object param) {
-            FormMgr.Open(UIConfigs.UIBackButton, null).Forget();
-            FormMgr.Open(UIConfigs.UISound).Forget();
+            FormMgr.Open(Form.UIBackButton, null).Forget();
+            FormMgr.Open(Form.UISound).Forget();
         }
 
         private void Start() {

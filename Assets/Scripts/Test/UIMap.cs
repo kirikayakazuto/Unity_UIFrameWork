@@ -11,19 +11,19 @@ namespace Test {
         public Button LevelButton;
         
         public override void OnInit(Object param) {
-            FormMgr.Open(UIConfigs.UIBackButton, null).Forget();
-            FormMgr.Open(UIConfigs.UISound).Forget();
+            FormMgr.Open(Form.UIBackButton, null).Forget();
+            FormMgr.Open(Form.UISound).Forget();
         }
 
         void Start() {
             this.UpgradeButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UIUpgrade).Forget();
+                FormMgr.Open(Form.UIUpgrade).Forget();
             });
             this.EncyckoButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UIToastText).Forget();
+                FormMgr.Open(Form.UIToastText).Forget();
             });
             this.LevelButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UILevel).Forget();
+                FormMgr.Open(Form.UILevel).Forget();
             });
         }
 

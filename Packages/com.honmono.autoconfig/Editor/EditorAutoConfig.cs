@@ -17,15 +17,21 @@ namespace Honmono.Autoconfig.Editor {
         public string name;
         public string prefabUrl;
         public string type;
-        public string assetbundle;
+    }
+    
+    public struct INodeConfig {
+        public string name;
+        public string prefabUrl;
     }
     public static class AutoConfig {
 
-        private const string UIConfigPath = "/Scripts/Logic/Managers/FrameWork/UIConfigs.cs";
+        private const string FormConfigPath = "/Scripts/Logic/Managers/FrameWork/Form.cs";
+        private const string NodeConfigPath = "/Scripts/Logic/Managers/FrameWork/Node.cs";
         
         // 生成auto config文件
         [MenuItem("Tools/AutoConfig")]
         public static void GenAutoConfig() {
+            var nodeConfigs = new Dictionary<string, INodeConfig>();
             var formConfigs = new Dictionary<string, IFormConfig>();
 
             var paths = AutoConfig.GetAllPrefabRelativePath();
@@ -35,6 +41,8 @@ namespace Honmono.Autoconfig.Editor {
             var windowBlock = new Regex(": UIWindow");
             var tipsBlock = new Regex(": UITips");
             var toastBlock = new Regex(": UIToast");
+
+            var normalBlock = new Regex(": MonoBehaviour");
             
             foreach (var path in paths) {
                 // asset name
@@ -42,58 +50,70 @@ namespace Honmono.Autoconfig.Editor {
                 
                 // asset bundle name
                 var prefabText = File.ReadAllText(path);
-                var assetBundleName = AssetDatabase.GetImplicitAssetBundleName(path) + "." + AssetDatabase.GetImplicitAssetBundleVariantName(path);
-                if (assetBundleName.Equals(".")) assetBundleName = "Resources";
-
-                var assetPath = path;
-                // if (assetBundleName.Equals("Resources")) {
-                //     var match = Regex.Match(path, "Assets/Resources/(?<PathVale>.*?).prefab");
-                //     if (match.Success) assetPath = match.Groups["PathVale"].Value;    
-                // } else {
-                //     var assets = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(assetBundleName, assetName);
-                //     foreach (var asset in assets) {
-                //         if (asset.Contains(assetName)) {
-                //             assetPath = assetName;
-                //         }
-                //     }
-                // }
                 
+                var assetPath = path;
+
                 var guidMatch = Regex.Matches(prefabText, "m_Script: {fileID: (.*), guid: (?<GuidValue>.*?), type: [0-9]}");
+                var extendsForm = false;
+                
+                var formName = Path.GetFileNameWithoutExtension(path);
+                
                 foreach (Match o in guidMatch) {
                     var guid = o.Groups["GuidValue"].Value;
                     var scriptPath = AssetDatabase.GUIDToAssetPath(guid);
                     if(!File.Exists(scriptPath)) continue;
 
                     var scriptText = File.ReadAllText(scriptPath);
-                    var formName = Path.GetFileNameWithoutExtension(scriptPath);
                     
                     if (screenBlock.Match(scriptText).Success) {
                         formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Screen"});
+                        extendsForm = true;
                     }else if (fixedBlock.Match(scriptText).Success) {
                         formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Fixed"});
+                        extendsForm = true;
                     }else if (windowBlock.Match(scriptText).Success) {
                         formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Window"});
+                        extendsForm = true;
                     }else if (tipsBlock.Match(scriptText).Success) {
                         formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Tips"});
+                        extendsForm = true;
                     }else if (toastBlock.Match(scriptText).Success) {
                         formConfigs.Add(formName, new IFormConfig() {name = formName, prefabUrl = assetPath, type = "Toast"});
+                        extendsForm = true;
                     }
+                }
+                if (!extendsForm) {
+                    nodeConfigs.Add(formName, new INodeConfig() {name = formName, prefabUrl = assetPath});
                 }
             }
 
-            var configScript = @"using FrameWork.Structure;
-public static class UIConfigs {
+            var formConfigScript = @"using FrameWork.Structure;
+public static class Form {
 ";
             foreach (var keyValuePair in formConfigs) {
-                configScript += $"\t\n    public static IFormConfig {keyValuePair.Key} = new IFormConfig() {{ " +
+                formConfigScript += $"\t\n    public static IFormConfig {keyValuePair.Key} = new IFormConfig() {{ " +
                                 $"\t\n        name = \"{keyValuePair.Value.name}\", " +
                                 $"\t\n        prefabUrl = \"{keyValuePair.Value.prefabUrl}\", " +
                                 $"\t\n        type = FormType.{keyValuePair.Value.type}, " +
                                 $"\t\n    }};\t\n";
             }
-            configScript += "\t\n}";
+            formConfigScript += "\t\n}";
+
+            var nodeConfigScript = @"using FrameWork.Structure;
+public static class Node {
+";
             
-            File.WriteAllText(Application.dataPath + UIConfigPath, configScript);
+            foreach (var keyValuePair in nodeConfigs) {
+                nodeConfigScript += $"\t\n    public static INodeConfig {keyValuePair.Key} = new INodeConfig() {{ " +
+                                    $"\t\n        name = \"{keyValuePair.Value.name}\", " +
+                                    $"\t\n        prefabUrl = \"{keyValuePair.Value.prefabUrl}\", " +
+                                    $"\t\n    }};\t\n";
+            }
+            nodeConfigScript += "\t\n}";
+            
+            File.WriteAllText(Application.dataPath + FormConfigPath, formConfigScript);
+            File.WriteAllText(Application.dataPath + NodeConfigPath, nodeConfigScript);
+            
             AssetDatabase.Refresh();
             
             Debug.Log("AutoConfig run success");

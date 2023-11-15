@@ -1,12 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using Cysharp.Threading.Tasks;
-using FrameWork;
-using Logic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
 
@@ -15,14 +8,7 @@ public class Main : MonoBehaviour {
     }
     
     private void Start() {
-        FormMgr.Open(UIConfigs.UIHome).Forget();
-        
-        // var bundle = AssetBundle.LoadFromFile(Application.dataPath + "/AssetBundles/abtest3");
-        // var assets = bundle.LoadAllAssets();
-        // foreach (var asset in assets) {
-        //     Debug.Log(asset.name);
-        // }
-
+        Form.UIHome.Open().Forget();
     }
 
     

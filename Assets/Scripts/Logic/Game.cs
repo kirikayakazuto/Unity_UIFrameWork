@@ -9,11 +9,13 @@ namespace Logic {
         public static ConfigMgr ConfigMgr;
         public static SoundMgr SoundMgr;
         public static UIManager UIMgr;
+        public static NodeManager NodeManager;
         public static async UniTask<bool> Init() {
             if(Game._inited) return false;
             
             // new mgr 
             Game.UIMgr = new UIManager();
+            Game.NodeManager = new NodeManager();
             Game.SoundMgr = new SoundMgr();
             Game.ConfigMgr = new ConfigMgr();
             // Game.ConfigMgr

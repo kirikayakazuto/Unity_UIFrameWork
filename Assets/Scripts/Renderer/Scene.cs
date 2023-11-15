@@ -11,8 +11,8 @@ namespace Renderer {
         void Start() {
         
         }
-        
-        void Update() {
+
+        private void Update() {
             Game.Update();
         }
     }

@@ -11,7 +11,7 @@ namespace Test {
     
         void Start() {
             this.CompletedButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UICompleted).Forget();
+                FormMgr.Open(Form.UICompleted).Forget();
             });
         }
 

@@ -3,7 +3,7 @@ using FrameWork.Structure;
 namespace FrameWork {
 	public static class SysDefine {
 		public static string AssetBundlePath = "Assets/AssetBundles";
-		public static IFormConfig defaultLoadingForm = UIConfigs.UILoading;
+		public static IFormConfig defaultLoadingForm = Form.UILoading;
 		/* 节点常量 */
 		public const string SYS_SCENE_NODE = "Scene";
 		public const string SYS_UIROOT_NODE = "ROOT";

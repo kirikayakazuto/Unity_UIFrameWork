@@ -11,15 +11,15 @@ namespace Test {
         public Button AboutButton;
 
         public override void OnInit(Object param) {
-            FormMgr.Open(UIConfigs.UISound).Forget();
+            FormMgr.Open(Form.UISound).Forget();
         }
 
         private void Start() {
             this.StartButton.onClick.AddListener(() => {
-                FormMgr.Open(UIConfigs.UIMap, null).Forget();
+                FormMgr.Open(Form.UIMap, null).Forget();
             });
             this.AboutButton.onClick.AddListener((() => {
-                FormMgr.Open(UIConfigs.UIAbout, null).Forget();
+                FormMgr.Open(Form.UIAbout, null).Forget();
             }));
 
             // Game.ConfigMgr.LoadConfigs();

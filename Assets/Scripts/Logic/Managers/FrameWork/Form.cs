@@ -1,5 +1,5 @@
 using FrameWork.Structure;
-public static class UIConfigs {
+public static class Form {
 	
     public static IFormConfig UIBackButton = new IFormConfig() { 	
         name = "UIBackButton", 	

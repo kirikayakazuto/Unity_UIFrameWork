@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using Logic;
 using UnityEngine;
 
 namespace FrameWork.Structure {
@@ -9,8 +11,29 @@ namespace FrameWork.Structure {
 		public string prefabUrl;
 		// 窗体类型
 		public FormType type;
-		// ab包的路径
-		public string assetbundleUrl;
+
+		public async UniTask<UIBase> Open([CanBeNull] Object param = null, IFormData formData = new IFormData()) {
+			return await FormMgr.Open(this, param, formData);
+		}
+		
+		public async UniTask<bool> Close([CanBeNull] Object param = null, IFormData formData = new IFormData()) {
+			return await FormMgr.Close(this, param, formData);
+		}
+	}
+
+	public struct INodeConfig {
+		// 窗体名称
+		public string name;
+		// ab包下的路径
+		private string prefabUrl;
+
+		public async UniTask<GameObject> Instance() {
+			return await Game.NodeManager.Instantiate(this.prefabUrl);
+		}
+
+		public void Release() {
+			Game.NodeManager.Release(this.prefabUrl);
+		}
 	}
 
 	public delegate void OnOpen(UIBase com);
